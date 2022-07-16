@@ -18,7 +18,8 @@ public class MainController {
                 new Help(view),
                 new Exit(view),
                 new Tables(view, manager),
-                new Find(view, manager)
+                new Find(view, manager),
+                new Unsupported(view)
         };
     }
 
@@ -36,7 +37,7 @@ public class MainController {
             } else if (commands[3].canProcess(input)) {
                 commands[3].process(input);
             } else {
-                view.write("Не існує такої команди: " + input);
+                commands[4].process(input);
             }
         }
         //...
