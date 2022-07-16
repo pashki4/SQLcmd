@@ -13,7 +13,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     @Override
     public String[] getTables() {
-        return new String[]{"User", "employee"};
+        return new String[]{"employee", "airplane"};
     }
 
     @Override

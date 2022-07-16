@@ -68,7 +68,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public DataSet[] getTableData(String tableName) {
-        String sqlSelectRowCount = "SELECT COUNT(id) FROM " + tableName + ";";
+        String sqlSelectRowCount = "SELECT COUNT(*) FROM " + tableName + ";";
         String sqlSelectAll = "SELECT * FROM " + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/"
