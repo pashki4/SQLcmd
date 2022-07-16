@@ -14,4 +14,6 @@ public interface DatabaseManager {
     void createTable();
 
     void updateTableData(String tableName, int id, DataSet newValue);
+
+    void printTableData(DataSet[] dataSets);
 }

@@ -23,57 +23,22 @@ public class Main {
     private static final String SQL_SELECT = "SELECT * FROM employee";
 
     public static void main(String[] args) throws SQLException {
-        DataSource dataSource = null;
-//        try (Connection connection = DriverManager
-//                .getConnection("jdbc:postgresql://127.0.0.1:5432/mytestdb",
-//                        "postgres",
-//                        "1234")) {
-//
-//            PreparedStatement preparedStatement = connection.prepareStatement(SQL_CREATE_TABLE);
-//            preparedStatement.execute();
-//        }
 
-        //UPDATE
-        try (Connection connection = DriverManager
-                .getConnection("jdbc:postgresql://127.0.0.1:5432/mytestdb",
-                        "postgres",
-                        "1234")) {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE);
-            preparedStatement.setLong(1, 20000);
-            preparedStatement.setString(2, "Nataly");
-            preparedStatement.executeUpdate();
-        }
-
-//        preparedStatement.execute() – Normally for DDL like CREATE or DROP
-//        preparedStatement.executeUpdate() – Normally for DML like INSERT, UPDATE, DELETE
-//        preparedStatement.executeQuery() – Run SELECT query and return a ResultSet
-//        preparedStatement.executeBatch() – Run SQL commands as a batch
-
-
-//        //INSERT | UPDATE
-//        PreparedStatement preparedStatement =
-//                connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-//        preparedStatement.setString(1, "Nataly");
-//        preparedStatement.setDouble(2, 12999.57);
-//        preparedStatement.executeUpdate();
-
-
-//        //SELECT
-        String getTables = "SELECT table_name\n" +
-                "  FROM information_schema.tables\n" +
-                " WHERE table_schema='public'\n" +
-                "   AND table_type='BASE TABLE';";
+        //SELECT
+        String getTables = "SELECT * FROM employee;";
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/mytestdb",
                         "postgres",
                         "1234")) {
             PreparedStatement preparedStatement = connection.prepareStatement(getTables);
             ResultSet resultSet = preparedStatement.executeQuery();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("table_name"));
+            int columnCount = resultSet.getMetaData().getColumnCount();
+            resultSet.next();
+            String result = "";
+            for (int i = 1; i <= columnCount; i++) {
+                result += resultSet.getMetaData().getColumnName(i);
             }
+            System.out.println(result);
         }
     }
 }

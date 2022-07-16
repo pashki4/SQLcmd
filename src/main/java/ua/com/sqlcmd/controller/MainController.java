@@ -1,7 +1,10 @@
 package ua.com.sqlcmd.controller;
 
+import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
+
+import java.util.Arrays;
 
 public class MainController {
     private View view;
@@ -14,13 +17,46 @@ public class MainController {
 
     public void run() {
         connect();
-        //...
+        while (true) {
+            view.write("Введіть команду або help для списку команд");
+            String input = view.read();
+            if (input.equals("tables")) {
+                getTables();
+            } else if (input.equals("help")) {
+                view.write("\thelp");
+                view.write("\t\tсписок всіх команд");
+                view.write("\ttables");
+                view.write("\t\tсписок всіх таблиць");
+                view.write("\tfind|tableName");
+                view.write("\t\tвідображення вмісту таблиці");
+                view.write("\texit");
+                view.write("\t\tвихід з програми");
+            } else if (input.equals("exit")) {
+                view.write("До зустрічі. Нехай щастить!");
+                System.exit(0);
+            } else if (input.startsWith("find")) {
+                String[] tableName = input.split("[|]");
+                doFind(tableName[1]);
+            } else {
+                view.write("Не існує такої команди: " + input);
+            }
+        }
         //...
         //...
     }
 
+    private void doFind(String tableName) {
+        manager.printTableData(manager.getTableData(tableName));
+    }
+
+    private void getTables() {
+        String[] tables = manager.getTables();
+        String result = Arrays.toString(tables);
+        view.write(result);
+    }
+
     private void connect() {
-        view.write("Привіт юзер!");
+        view.write("Вітаю юзер!");
         view.write("Введи, будь ласка, данні для підключення у такому форматі: database|userName|password");
         while (true) {
             try {

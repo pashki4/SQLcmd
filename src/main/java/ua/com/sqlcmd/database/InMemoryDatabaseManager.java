@@ -50,6 +50,11 @@ public class InMemoryDatabaseManager implements DatabaseManager {
         }
     }
 
+    @Override
+    public void printTableData(DataSet[] dataSets) {
+
+    }
+
     private void validate(String tableName) {
         if (!tableName.equals("employee")) {
             throw new UnsupportedOperationException("Works only with 'employee', but you try: " + tableName);

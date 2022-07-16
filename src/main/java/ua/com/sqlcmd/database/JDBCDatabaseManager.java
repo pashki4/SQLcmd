@@ -2,6 +2,7 @@ package ua.com.sqlcmd.database;
 
 import java.sql.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class JDBCDatabaseManager implements DatabaseManager {
     private String database;
@@ -74,6 +75,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
                              + database, userName, password)) {
             PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectRowCount);
             ResultSet resultSet = preparedStatement.executeQuery();
+
             resultSet.next();
             int dataSetCount = resultSet.getInt(1);
 
@@ -94,6 +96,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             return new DataSet[0];
         }
     }
+
 
     @Override
     public void clear(String tableName) {
@@ -171,6 +174,25 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    @Override
+    public void printTableData(DataSet[] dataSet) {
+        Objects.requireNonNull(dataSet);
+        String[] columnNames = dataSet[0].getColumnNames();
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.join(" ", columnNames));
+        sb.append("\n");
+        for (DataSet data : dataSet) {
+            Object[] values = data.getValues();
+            String[] strings = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                strings[i] = String.valueOf(values[i]);
+            }
+            sb.append(String.join(" ", strings));
+            sb.append("\n");
+        }
+        System.out.println(sb);
     }
 }
 
