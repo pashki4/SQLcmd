@@ -4,8 +4,6 @@ import ua.com.sqlcmd.command.*;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import java.util.Arrays;
-
 public class MainController {
     private Command[] commands;
     private View view;

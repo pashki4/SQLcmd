@@ -20,7 +20,11 @@ public class Find implements Command {
     @Override
     public void process(String command) {
         String[] input = command.split("[|]");
-        String tableName = input[1];
-        manager.printTableData(manager.getTableData(tableName));
+        if (input.length != 2) {
+            view.write("Формат для команди: find|tableName");
+        } else {
+            String tableName = input[1];
+            manager.printTableData(manager.getTableData(tableName));
+        }
     }
 }
