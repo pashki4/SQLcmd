@@ -21,7 +21,7 @@ public class Find implements Command {
     public void process(String command) {
         String[] input = command.split("[|]");
         if (input.length != 2) {
-            view.write("Формат для команди: find|tableName");
+            view.write(String.format("Невірний формат, потрібно: find|tableName, а було: %s", command));
         } else {
             String tableName = input[1];
             manager.printTableData(manager.getTableData(tableName));

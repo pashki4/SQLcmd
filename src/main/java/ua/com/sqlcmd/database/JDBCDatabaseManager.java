@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class JDBCDatabaseManager implements DatabaseManager {
+    private boolean isConnected;
     private String database;
     private String userName;
     private String password;
@@ -26,14 +27,15 @@ public class JDBCDatabaseManager implements DatabaseManager {
             ");";
 
     @Override
-    public boolean connect(String database, String userName, String password) {
+    public void connect(String database, String userName, String password) {
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/" + database,
                         userName, password)) {
             this.database = database;
             this.userName = userName;
             this.password = password;
-            return true;
+            isConnected = true;
+
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Cant get connection for database: %s, userName: %s, password: %s",
@@ -193,6 +195,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
             sb.append("\n");
         }
         System.out.println(sb);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
     }
 }
 

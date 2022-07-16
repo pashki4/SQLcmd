@@ -2,7 +2,7 @@ package ua.com.sqlcmd.database;
 
 public interface DatabaseManager {
 
-    boolean connect(String database, String userName, String password);
+    void connect(String database, String userName, String password);
     String[] getTables();
 
     DataSet[] getTableData(String tableName);
@@ -16,4 +16,7 @@ public interface DatabaseManager {
     void updateTableData(String tableName, int id, DataSet newValue);
 
     void printTableData(DataSet[] dataSets);
+
+    boolean isConnected();
+
 }

@@ -19,8 +19,11 @@ public class Help implements Command {
         view.write("\thelp");
         view.write("\t\tсписок всіх команд");
 
-        view.write("\ttables");
-        view.write("\t\tсписок всіх таблиць");
+        view.write("\tconnect|database|userName|password");
+        view.write("\t\tпідключення до бази данних");
+
+        view.write("\tlist");
+        view.write("\t\tвідображення списку всіх таблиць");
 
         view.write("\tfind|tableName");
         view.write("\t\tвідображення вмісту таблиці");

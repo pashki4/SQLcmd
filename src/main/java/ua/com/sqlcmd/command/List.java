@@ -5,19 +5,19 @@ import ua.com.sqlcmd.view.View;
 
 import java.util.Arrays;
 
-public class Tables implements Command {
+public class List implements Command {
 
     private final DatabaseManager manager;
     private final View view;
 
-    public Tables(View view, DatabaseManager manager) {
+    public List(View view, DatabaseManager manager) {
         this.view = view;
         this.manager = manager;
     }
 
     @Override
     public boolean canProcess(String command) {
-        return command.equals("tables");
+        return command.equals("list");
     }
 
     @Override

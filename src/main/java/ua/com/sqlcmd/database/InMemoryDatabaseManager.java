@@ -5,10 +5,10 @@ import java.util.Arrays;
 public class InMemoryDatabaseManager implements DatabaseManager {
     private DataSet[] data = new DataSet[100];
     private int size;
+    private boolean isConnected = true;
 
     @Override
-    public boolean connect(String database, String userName, String password) {
-        return true;
+    public void connect(String database, String userName, String password) {
     }
 
     @Override
@@ -53,6 +53,11 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     @Override
     public void printTableData(DataSet[] dataSets) {
 
+    }
+
+    @Override
+    public boolean isConnected() {
+        return isConnected;
     }
 
     private void validate(String tableName) {
