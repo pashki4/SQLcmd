@@ -1,9 +1,6 @@
 package ua.com.sqlcmd.controller;
 
-import ua.com.sqlcmd.command.Command;
-import ua.com.sqlcmd.command.Exit;
-import ua.com.sqlcmd.command.Help;
-import ua.com.sqlcmd.command.Tables;
+import ua.com.sqlcmd.command.*;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
@@ -20,7 +17,8 @@ public class MainController {
         commands = new Command[]{
                 new Help(view),
                 new Exit(view),
-                new Tables(view, manager)
+                new Tables(view, manager),
+                new Find(view, manager)
         };
     }
 
@@ -35,20 +33,14 @@ public class MainController {
                 commands[0].process(input);
             } else if (commands[1].canProcess(input)) {
                 commands[1].process(input);
-            } else if (input.startsWith("find|")) {
-                String[] tableName = input.split("[|]");
-                doFind(tableName[1]);
+            } else if (commands[3].canProcess(input)) {
+                commands[3].process(input);
             } else {
                 view.write("Не існує такої команди: " + input);
             }
         }
         //...
         //...
-    }
-
-
-    private void doFind(String tableName) {
-        manager.printTableData(manager.getTableData(tableName));
     }
 
     private void connect() {
