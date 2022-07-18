@@ -26,6 +26,9 @@ public class Help implements Command {
         view.write("\tclear|tableName");
         view.write("\t\tочищення таблиці");
 
+        view.write("\tcreate|tableName|column1|column2|...|columnN");
+        view.write("\t\tстворення таблиці");
+
         view.write("\tlist");
         view.write("\t\tвідображення списку всіх таблиць");
 

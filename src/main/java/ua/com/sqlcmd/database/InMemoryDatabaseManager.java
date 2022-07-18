@@ -36,7 +36,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void createTable() {
+    public void createTable(String queryCreateTable) {
 
     }
 

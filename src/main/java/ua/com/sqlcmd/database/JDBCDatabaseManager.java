@@ -2,7 +2,6 @@ package ua.com.sqlcmd.database;
 
 import java.sql.*;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class JDBCDatabaseManager implements DatabaseManager {
     private boolean isConnected;
@@ -17,14 +16,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private static final String SQL_DELETE = "DELETE FROM employee WHERE salary < 12000";
 
     private static final String SQL_SELECT = "SELECT * FROM employee";
-
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS employee\n" +
-            "(\n" +
-            "    ID serial,\n" +
-            "    NAME varchar(100) NOT NULL,\n" +
-            "    SALARY numeric(15, 2) NOT NULL,\n" +
-            "    PRIMARY KEY (ID)\n" +
-            ");";
 
     @Override
     public void connect(String database, String userName, String password) {
@@ -70,8 +61,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public DataSet[] getTableData(String tableName) {
-        String sqlSelectRowCount = "SELECT COUNT(*) FROM " + tableName + ";";
-        String sqlSelectAll = "SELECT * FROM " + tableName + ";";
+        String sqlSelectRowCount = "SELECT COUNT(*) FROM public." + tableName + ";";
+        String sqlSelectAll = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/"
                              + database, userName, password)) {
@@ -79,9 +70,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             resultSet.next();
-            int dataSetCount = resultSet.getInt(1);
+            int rowCount = resultSet.getInt(1);
 
-            DataSet[] dataSet = new DataSet[dataSetCount];
+            DataSet[] dataSet = new DataSet[rowCount];
             preparedStatement = connection.prepareStatement(sqlSelectAll);
             resultSet = preparedStatement.executeQuery();
             int dataSetFreeIndex = 0;
@@ -144,15 +135,43 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void createTable() {
+    public void createTable(String queryCreateTable) {
+
+        String[] input = queryCreateTable.split("[|]");
+        if (input.length < 3) {
+            throw new IllegalArgumentException("Неправильна кількість параметрів: ");
+        }
+        String tableName = input[1];
+
+        String sqlCreateTable = createSqlCreateQuerty(input, tableName);
+
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/"
-                        + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_CREATE_TABLE);
+                        + database, userName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable))
+        {
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private String createSqlCreateQuerty(String[] input, String tableName) {
+        String sqlCreateTable = "CREATE TABLE public." + tableName + " (ID serial, ";
+        String[] varcharColumnNames = addVarcharToColumnNames(input);
+
+        sqlCreateTable += String.join(", ", varcharColumnNames);
+        sqlCreateTable += ", PRIMARY KEY(id));";
+        return sqlCreateTable;
+    }
+
+    private String[] addVarcharToColumnNames(String[] input) {
+        String[] columnNames = Arrays.copyOfRange(input, 2, input.length);
+        String[] columnNamesVarchar = new String[columnNames.length];
+        for (int i = 0; i < columnNames.length; i++) {
+            columnNamesVarchar[i] = columnNames[i].toUpperCase() + " varchar(30) NOT NULL";
+        }
+        return columnNamesVarchar;
     }
 
     @Override

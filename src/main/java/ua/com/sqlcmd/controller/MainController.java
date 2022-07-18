@@ -17,6 +17,7 @@ public class MainController {
                 new Help(view),
                 new Exit(view),
                 new IsConnected(view, manager),
+                new Create(view, manager),
                 new List(view, manager),
                 new Find(view, manager),
                 new Clear(view, manager),

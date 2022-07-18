@@ -11,7 +11,7 @@ public interface DatabaseManager {
 
     void insert(DataSet dataSet, String tableName);
 
-    void createTable();
+    void createTable(String queryCreateTable);
 
     void updateTableData(String tableName, int id, DataSet newValue);
 
