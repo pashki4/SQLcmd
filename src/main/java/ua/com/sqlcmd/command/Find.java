@@ -3,6 +3,9 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Find implements Command {
     private View view;
     private DatabaseManager manager;
@@ -19,12 +22,30 @@ public class Find implements Command {
 
     @Override
     public void process(String command) {
-        String[] input = command.split("[|]");
-        if (input.length != 2) {
-            view.write(String.format("Невірний формат, потрібно: find|tableName, а було: %s", command));
-        } else {
-            String tableName = input[1];
-            manager.printTableData(manager.getTableData(tableName));
+        try {
+            String[] input = command.split("[|]");
+            if (input.length != 2) {
+                throw new IllegalArgumentException(
+                        String.format("Невірний формат, потрібно: find|tableName, а було: %s", command));
+            } else {
+                String tableName = input[1];
+                List<String> strings = Arrays.asList(manager.getTables());
+                if (!strings.contains(tableName)) {
+                    throw new IllegalAccessException("Введена невірна назва таблиці: " + tableName);
+                }
+                manager.printTableData(manager.getTableData(tableName));
+            }
+        } catch (Exception e) {
+            printMessage(e);
         }
+
+    }
+
+    private void printMessage(Exception e) {
+        String message = e.getMessage();
+        if (e.getCause() != null) {
+            message += e.getCause().getMessage();
+        }
+        view.write(message);
     }
 }

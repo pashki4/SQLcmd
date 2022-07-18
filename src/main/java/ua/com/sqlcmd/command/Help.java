@@ -9,6 +9,7 @@ public class Help implements Command {
         this.view = view;
     }
 
+
     @Override
     public boolean canProcess(String command) {
         return command.equals("help");
@@ -21,6 +22,9 @@ public class Help implements Command {
 
         view.write("\tconnect|database|userName|password");
         view.write("\t\tпідключення до бази данних");
+
+        view.write("\tclear|tableName");
+        view.write("\t\tочищення таблиці");
 
         view.write("\tlist");
         view.write("\t\tвідображення списку всіх таблиць");

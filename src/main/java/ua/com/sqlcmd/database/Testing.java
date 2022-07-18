@@ -1,14 +1,19 @@
 package ua.com.sqlcmd.database;
 
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Testing {
     public static void main(String[] args) {
-        int[] array = new int[5];
-        array[0] = 9;
-        array[1] = 8;
-        System.out.println(Arrays.toString(array));
-        array = Arrays.copyOfRange(array, 0, 2);
-        System.out.println(Arrays.toString(array));
+        while (true) {
+            System.out.println("1");
+            try {
+                Connection connection = DriverManager.getConnection("");
+                System.out.println("SELECT * FROM employee");
+            } catch (SQLException e) {
+                System.out.println("Can't get connection");
+            }
+        }
     }
 }

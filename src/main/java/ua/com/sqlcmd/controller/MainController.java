@@ -19,6 +19,7 @@ public class MainController {
                 new IsConnected(view, manager),
                 new List(view, manager),
                 new Find(view, manager),
+                new Clear(view, manager),
                 new Unsupported(view)
         );
     }
