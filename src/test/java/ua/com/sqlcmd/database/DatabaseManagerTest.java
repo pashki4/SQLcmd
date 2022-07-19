@@ -32,9 +32,9 @@ abstract class DatabaseManagerTest {
 
         //when
         DataSet coworker = new DataSet();
-        coworker.valueOf("id", 1);
-        coworker.valueOf("name", "Vasya");
-        coworker.valueOf("salary", 15000.95);
+        coworker.put("id", 1);
+        coworker.put("name", "Vasya");
+        coworker.put("salary", 15000.95);
         manager.insert(coworker, "employee");
 
         //then
@@ -49,13 +49,13 @@ abstract class DatabaseManagerTest {
     public void testUpdateTableData() {
         manager.clear("employee");
         DataSet coworker = new DataSet();
-        coworker.valueOf("id", 1);
-        coworker.valueOf("name", "sadVasya");
-        coworker.valueOf("salary", 1000.09);
+        coworker.put("id", 1);
+        coworker.put("name", "sadVasya");
+        coworker.put("salary", 1000.09);
         manager.insert(coworker, "employee");
         coworker = new DataSet();
-        coworker.valueOf("name","happyVasya");
-        coworker.valueOf("salary",34000.11);
+        coworker.put("name","happyVasya");
+        coworker.put("salary",34000.11);
         manager.updateTableData("employee", 1, coworker);
         assertEquals("[happyVasya, 34000.11]", Arrays.toString(coworker.getValues()));
     }

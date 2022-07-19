@@ -23,7 +23,7 @@ public class Create implements Command {
             manager.createTable(command);
             String[] split = command.split("[|]");
 
-            view.write(String.format("Була створена таблиця: %s", split[1]));
+            view.write(String.format("Створено таблицю: %s", split[1]));
         } catch (Exception e) {
             printMessage(e);
         }

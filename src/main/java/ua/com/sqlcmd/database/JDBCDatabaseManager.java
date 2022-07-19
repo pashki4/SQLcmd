@@ -43,8 +43,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/"
-                        + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(getTables);
+                        + database, userName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(getTables)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             String[] result = new String[100];
             int index = 0;
@@ -75,19 +75,41 @@ public class JDBCDatabaseManager implements DatabaseManager {
             DataSet[] dataSet = new DataSet[rowCount];
             preparedStatement = connection.prepareStatement(sqlSelectAll);
             resultSet = preparedStatement.executeQuery();
+            String[] columnNames = getColumnNames(resultSet);
+            DataSet[] dataSetColumnNames = new DataSet[1];
+            DataSet temp = new DataSet();
+            for (int i = 0; i < columnNames.length; i++) {
+                temp.put(columnNames[i], "");
+            }
+            dataSetColumnNames[0] = temp;
+
             int dataSetFreeIndex = 0;
             while (resultSet.next()) {
                 DataSet newDataSet = new DataSet();
                 for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    newDataSet.valueOf(resultSet.getMetaData().getColumnName(i), resultSet.getObject(i));
+                    newDataSet.put(resultSet.getMetaData().getColumnName(i), resultSet.getObject(i));
                 }
                 dataSet[dataSetFreeIndex++] = newDataSet;
             }
-            return dataSet;
+            if (dataSet.length != 0) {
+                return dataSet;
+            } else {
+                return dataSetColumnNames;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return new DataSet[0];
         }
+    }
+
+    private String[] getColumnNames(ResultSet resultSet) throws SQLException {
+        int columnCount = resultSet.getMetaData().getColumnCount();
+        String[] columnNames = new String[columnCount];
+        int index = 1;
+        while (index <= columnCount) {
+            columnNames[index - 1] = resultSet.getMetaData().getColumnName(index++);
+        }
+        return columnNames;
     }
 
 
@@ -95,8 +117,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void clear(String tableName) {
         String sqlDelete = "DELETE FROM " + tableName + ";";
         try (Connection connection = DriverManager
-                .getConnection("jdbc:postgresql://127.0.0.1:5432/" + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete);
+                .getConnection("jdbc:postgresql://127.0.0.1:5432/" + database, userName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,11 +129,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void insert(DataSet dataSet, String tableName) {
         String columnNames = prepareColumnNames(dataSet);
         String values = prepareValues(dataSet);
-        String sqlInsert = "INSERT INTO " + tableName + " (" + columnNames + ") VALUES (" + values + ")";
+        String sqlInsert = "INSERT INTO public." + tableName + " (" + columnNames + ") VALUES (" + values + ")";
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/"
-                        + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
+                        + database, userName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert)) {
             Object[] input = dataSet.getValues();
             int parameterIndex = 1;
             for (int i = 0; i < dataSet.getValues().length; i++) {
@@ -143,20 +165,19 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
         String tableName = input[1];
 
-        String sqlCreateTable = createSqlCreateQuerty(input, tableName);
+        String sqlCreateTable = createSqlCreateQuery(input, tableName);
 
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/"
                         + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable))
-        {
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable)) {
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private String createSqlCreateQuerty(String[] input, String tableName) {
+    private String createSqlCreateQuery(String[] input, String tableName) {
         String sqlCreateTable = "CREATE TABLE public." + tableName + " (ID serial, ";
         String[] varcharColumnNames = addVarcharToColumnNames(input);
 
@@ -185,8 +206,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
         try (Connection connection = DriverManager
                 .getConnection("jdbc:postgresql://127.0.0.1:5432/"
-                        + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
+                        + database, userName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)) {
             int parameterIndex = 1;
             for (int i = 0; i < columnNames.length; i++) {
                 preparedStatement.setObject(parameterIndex++, values[i]);
@@ -201,7 +222,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void printTableData(DataSet[] dataSet) {
         if (dataSet.length == 0) {
 
-            System.out.println("*-------*");
         } else {
             String[] columnNames = dataSet[0].getColumnNames();
             StringBuilder sb = new StringBuilder();

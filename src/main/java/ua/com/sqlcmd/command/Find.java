@@ -1,5 +1,6 @@
 package ua.com.sqlcmd.command;
 
+import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
@@ -33,7 +34,8 @@ public class Find implements Command {
                 if (!strings.contains(tableName)) {
                     throw new IllegalAccessException("Введена невірна назва таблиці: " + tableName);
                 }
-                manager.printTableData(manager.getTableData(tableName));
+                DataSet[] tableData = manager.getTableData(tableName);
+                manager.printTableData(tableData);
             }
         } catch (Exception e) {
             printMessage(e);

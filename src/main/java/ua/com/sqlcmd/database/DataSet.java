@@ -27,7 +27,7 @@ public class DataSet {
         }
     }
 
-    public void valueOf(String name, Object value) {
+    public void put(String name, Object value) {
         data[freeIndex++] = new Data(name, value);
     }
 

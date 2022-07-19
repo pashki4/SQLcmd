@@ -18,6 +18,7 @@ public class MainController {
                 new Exit(view),
                 new IsConnected(view, manager),
                 new Create(view, manager),
+                new Insert(view, manager),
                 new List(view, manager),
                 new Find(view, manager),
                 new Clear(view, manager),
@@ -26,7 +27,7 @@ public class MainController {
     }
     public void run() {
         view.write("Вітаю юзер!");
-        view.write("Введи, будь ласка, данні для підключення у такому форматі: connect|database|userName|password");
+        view.write("Введи, данні для підключення у такому форматі: connect|database|userName|password");
         view.write("або help, для переліку команд");
 
         while (true) {

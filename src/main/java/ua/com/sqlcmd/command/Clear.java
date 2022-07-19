@@ -36,16 +36,16 @@ public class Clear implements Command {
             }
             view.write("Ви дійсно хочете очистити всі данні з таблиці: " + tableName + "?");
             while (true) {
-                view.write("Введіть: 'так' для очищення, або 'ні' для відміни");
+                view.write("Введіть: 'yes' для очищення, або 'no' для відміни");
                 String input = view.read();
-                if (input.equalsIgnoreCase("так")) {
+                if (input.equalsIgnoreCase("yes")) {
                     manager.clear(tableName);
                     view.write("Таблиця: " + tableName + " очищенна");
                     break;
-                } else if (input.equalsIgnoreCase("ні")) {
+                } else if (input.equalsIgnoreCase("no")) {
                     break;
                 } else throw
-                        new IllegalArgumentException("невірний формат данних, потрібно: 'так', або 'ні', а ввели: " + input);
+                        new IllegalArgumentException("невірний формат данних, потрібно: 'yes', або 'no', а ввели: " + input);
             }
         } catch (Exception e) {
             printMessage(e);

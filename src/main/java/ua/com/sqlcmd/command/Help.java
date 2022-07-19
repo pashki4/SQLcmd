@@ -29,6 +29,9 @@ public class Help implements Command {
         view.write("\tcreate|tableName|column1|column2|...|columnN");
         view.write("\t\tстворення таблиці");
 
+        view.write("\tinsert|tableName|column1|value1|column2|value2|...|columnN|valueN");
+        view.write("\t\tвставити одну строку в таблицю");
+
         view.write("\tlist");
         view.write("\t\tвідображення списку всіх таблиць");
 
