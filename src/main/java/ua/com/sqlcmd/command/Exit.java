@@ -17,6 +17,6 @@ public class Exit implements Command{
     @Override
     public void process(String command) {
         view.write("До зустрічі. Нехай щастить!");
-        throw new ExitException("exception was invoked");
+        throw new ExitException();
     }
 }
