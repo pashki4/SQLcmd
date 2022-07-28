@@ -22,41 +22,30 @@ public class Clear implements Command {
 
     @Override
     public void process(String command) {
-        try {
-            String[] split = command.split("[|]");
-            if (split.length != 2) {
-                throw new
-                        IllegalArgumentException("невірна кількість параметрів розділених символом '|'," +
-                        " очікується 2, але ввели:" + split.length);
-            }
-            String tableName = split[1];
-            List<String> tables = Arrays.asList(manager.getTables());
-            if (!tables.contains(tableName)) {
-                throw new IllegalAccessException("Введена невірна назва таблиці: " + tableName);
-            }
-            view.write("Ви дійсно хочете очистити всі данні з таблиці: " + tableName + "?");
-            while (true) {
-                view.write("Введіть: 'yes' для очищення, або 'no' для відміни");
-                String input = view.read();
-                if (input.equalsIgnoreCase("yes")) {
-                    manager.clear(tableName);
-                    view.write("Таблиця: " + tableName + " очищенна");
-                    break;
-                } else if (input.equalsIgnoreCase("no")) {
-                    break;
-                } else throw
-                        new IllegalArgumentException("невірний формат данних, потрібно: 'yes', або 'no', а ввели: " + input);
-            }
-        } catch (Exception e) {
-            printMessage(e);
+        String[] split = command.split("[|]");
+        if (split.length != 2) {
+            throw new
+                    IllegalArgumentException("невірна кількість параметрів розділених символом '|'," +
+                    " очікується 2, але ввели:" + split.length);
         }
-    }
+        String tableName = split[1];
+        List<String> tables = Arrays.asList(manager.getTables());
 
-    private void printMessage(Exception e) {
-        String message = e.getMessage();
-        if (e.getCause() != null) {
-            message += " " + e.getCause().getMessage();
+        if (!tables.contains(tableName)) {
+            throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
         }
-        view.write("Невдача через " + message);
+        view.write("Ви дійсно хочете очистити всі данні з таблиці: " + tableName + "?");
+        while (true) {
+            view.write("Введіть: 'yes' для очищення, або 'no' для відміни");
+            String input = view.read();
+            if (input.equalsIgnoreCase("yes")) {
+                manager.clear(tableName);
+                view.write("Таблиця: " + tableName + " очищенна");
+                break;
+            } else if (input.equalsIgnoreCase("no")) {
+                break;
+            } else throw
+                    new IllegalArgumentException("невірний формат данних, потрібно: 'yes', або 'no', а ввели: " + input);
+        }
     }
 }

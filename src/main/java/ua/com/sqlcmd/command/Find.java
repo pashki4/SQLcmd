@@ -23,7 +23,7 @@ public class Find implements Command {
 
     @Override
     public void process(String command) {
-        try {
+
             String[] input = command.split("[|]");
             if (input.length != 2) {
                 throw new IllegalArgumentException(
@@ -32,16 +32,13 @@ public class Find implements Command {
                 String tableName = input[1];
                 List<String> strings = Arrays.asList(manager.getTables());
                 if (!strings.contains(tableName)) {
-                    throw new IllegalAccessException("Введена невірна назва таблиці: " + tableName);
+                    throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
                 }
                 DataSet[] tableData = manager.getTableData(tableName);
                 printTableData(tableData);
             }
-        } catch (Exception e) {
-            printMessage(e);
         }
 
-    }
     private void printTableData(DataSet[] dataSet) {
         String[] columnNames = dataSet[0].getColumnNames();
         StringBuilder sb = new StringBuilder();
@@ -57,13 +54,5 @@ public class Find implements Command {
             sb.append("\n");
         }
         view.write(sb.toString());
-    }
-
-    private void printMessage(Exception e) {
-        String message = e.getMessage();
-        if (e.getCause() != null) {
-            message += e.getCause().getMessage();
-        }
-        view.write(message);
     }
 }

@@ -40,14 +40,28 @@ public class MainController {
         view.write("або help, для переліку команд");
 
         while (true) {
-            String input = view.read();
-            for (Command command : commands) {
-                if (command.canProcess(input)) {
-                    command.process(input);
-                    break;
+            try {
+                String input = view.read();
+                for (Command command : commands) {
+                    if (command.canProcess(input)) {
+                        command.process(input);
+                        break;
+                    }
                 }
+            } catch (IllegalArgumentException e) {
+                printMessage(e);
+            } catch (ExitException e) {
+                System.exit(0);
             }
             view.write("Введіть команду або help для переліку команд");
         }
+    }
+
+    private void printMessage(Exception e) {
+        String message = e.getMessage();
+        if (e.getCause() != null) {
+            message += e.getCause().getMessage();
+        }
+        view.write("Невдача у зв'язку з: " + message);
     }
 }

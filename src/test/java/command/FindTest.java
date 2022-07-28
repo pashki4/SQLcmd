@@ -101,4 +101,26 @@ public class FindTest {
         boolean cantProcess = command.canProcess("qwe|asd");
         assertFalse(cantProcess);
     }
+
+    @Test
+    void cantProcessIncorrectParameterNumber() {
+        try {
+            command.process("clear|asd|2asdf");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Невірний формат, потрібно: find|tableName, а було: clear|asd|2asdf", e.getMessage());
+        }
+    }
+
+    @Test
+    void cantProcessIncorrectTableName() {
+        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        try {
+            command.process("clear|employ");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Введена невірна назва таблиці: employ", e.getMessage());
+        }
+    }
+
 }
