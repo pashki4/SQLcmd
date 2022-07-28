@@ -25,7 +25,16 @@ public class MainController {
                 new Unsupported(view)
         );
     }
+
     public void run() {
+        try {
+            doWork();
+        } catch (ExitException e) {
+            //do nothing
+        }
+    }
+
+    private void doWork() {
         view.write("Вітаю юзер!");
         view.write("Введи, данні для підключення у такому форматі: connect|database|userName|password");
         view.write("або help, для переліку команд");

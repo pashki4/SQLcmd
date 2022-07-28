@@ -15,8 +15,6 @@ public interface DatabaseManager {
 
     void updateTableData(String tableName, int id, DataSet newValue);
 
-    void printTableData(DataSet[] dataSets);
-
     boolean isConnected();
 
 }

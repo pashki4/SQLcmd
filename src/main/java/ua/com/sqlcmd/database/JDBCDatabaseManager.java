@@ -79,7 +79,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             DataSet[] dataSetColumnNames = new DataSet[1];
             DataSet temp = new DataSet();
             for (int i = 0; i < columnNames.length; i++) {
-                temp.put(columnNames[i], "");
+                temp.put(columnNames[i], "*");
             }
             dataSetColumnNames[0] = temp;
 
@@ -215,28 +215,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-        }
-    }
-
-    @Override
-    public void printTableData(DataSet[] dataSet) {
-        if (dataSet.length == 0) {
-
-        } else {
-            String[] columnNames = dataSet[0].getColumnNames();
-            StringBuilder sb = new StringBuilder();
-            sb.append(String.join(" ", columnNames));
-            sb.append("\n");
-            for (DataSet data : dataSet) {
-                Object[] values = data.getValues();
-                String[] strings = new String[values.length];
-                for (int i = 0; i < values.length; i++) {
-                    strings[i] = String.valueOf(values[i]);
-                }
-                sb.append(String.join(" ", strings));
-                sb.append("\n");
-            }
-            System.out.println(sb);
         }
     }
 

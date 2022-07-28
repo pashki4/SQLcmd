@@ -51,11 +51,6 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void printTableData(DataSet[] dataSets) {
-
-    }
-
-    @Override
     public boolean isConnected() {
         return isConnected;
     }

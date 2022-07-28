@@ -21,7 +21,6 @@ public class Insert implements Command {
     @Override
     public void process(String command) {
         String[] split = command.split("[|]");
-//        insert | tableName | column1 | value1 | column2 | value2 | ... | columnN | valueN
         if (split.length <= 2 || split.length % 2 != 0) {
             throw new IllegalArgumentException(
                     String.format("Невірна кількість параметрів, було %s, а потрібно >= 4", split.length));

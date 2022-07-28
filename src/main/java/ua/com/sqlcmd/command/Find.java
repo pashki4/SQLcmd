@@ -35,12 +35,28 @@ public class Find implements Command {
                     throw new IllegalAccessException("Введена невірна назва таблиці: " + tableName);
                 }
                 DataSet[] tableData = manager.getTableData(tableName);
-                manager.printTableData(tableData);
+                printTableData(tableData);
             }
         } catch (Exception e) {
             printMessage(e);
         }
 
+    }
+    private void printTableData(DataSet[] dataSet) {
+        String[] columnNames = dataSet[0].getColumnNames();
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.join(" ", columnNames));
+        sb.append("\n");
+        for (DataSet data : dataSet) {
+            Object[] values = data.getValues();
+            String[] strings = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                strings[i] = String.valueOf(values[i]);
+            }
+            sb.append(String.join(" ", strings));
+            sb.append("\n");
+        }
+        view.write(sb.toString());
     }
 
     private void printMessage(Exception e) {
