@@ -1,12 +1,8 @@
-package command;
+package ua.com.sqlcmd.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.Mockito;
-import ua.com.sqlcmd.command.Command;
-import ua.com.sqlcmd.command.Exit;
-import ua.com.sqlcmd.command.ExitException;
 import ua.com.sqlcmd.view.View;
 
 import static org.junit.jupiter.api.Assertions.*;

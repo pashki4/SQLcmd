@@ -1,4 +1,4 @@
-package command;
+package ua.com.sqlcmd.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

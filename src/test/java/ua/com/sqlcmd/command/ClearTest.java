@@ -1,15 +1,11 @@
-package command;
+package ua.com.sqlcmd.command;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ua.com.sqlcmd.command.Clear;
-import ua.com.sqlcmd.command.Command;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
-
-import java.lang.reflect.Executable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -57,17 +53,6 @@ public class ClearTest {
     }
 
     @Test
-    void clearIncorrectTableName() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
-        try {
-            command.process("clear|employ");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Введена невірна назва таблиці: employ", e.getMessage());
-        }
-    }
-
-    @Test
     void canProcessClearWithParameters() {
         boolean canProcess = command.canProcess("clear|");
         assertTrue(canProcess);
@@ -91,7 +76,7 @@ public class ClearTest {
     }
 
     @Test
-    void test() {
+    void validationProcessWrongTableName() {
         when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
         try {
             command.process("clear|notExistentTable");
