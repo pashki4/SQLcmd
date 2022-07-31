@@ -5,14 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ua.com.sqlcmd.command.Command;
-import ua.com.sqlcmd.command.Find;
 import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FindTest {
 
@@ -27,7 +25,6 @@ public class FindTest {
         MockitoAnnotations.openMocks(this);
         command = new Find(view, manager);
     }
-
 
     @Test
     void printTableData() {
@@ -51,10 +48,13 @@ public class FindTest {
         command.process("find|employee");
 
         //then
-        shouldPrint("[id name email\n" +
-                            "11 Piter piter@gmail.com\n" +
-                            "15 Leyla leyla@gmail.com\n" +
-                            "]");
+        shouldPrint("[+--+-----+---------------+\n" +
+                "|id|name |     email     |\n" +
+                "+--+-----+---------------+\n" +
+                "|11|Piter|piter@gmail.com|\n" +
+                "|15|Leyla|leyla@gmail.com|\n" +
+                "+--+-----+---------------+\n" +
+                "]");
     }
 
     private void shouldPrint(String expected) {
@@ -68,9 +68,9 @@ public class FindTest {
         when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
 
         DataSet empty = new DataSet();
-        empty.put("id", "*");
-        empty.put("name", "*");
-        empty.put("email", "*");
+        empty.put("id", "");
+        empty.put("name", "");
+        empty.put("email", "");
         DataSet[] data = new DataSet[]{empty};
 
         when(manager.getTableData("employee")).thenReturn(data);
@@ -79,9 +79,12 @@ public class FindTest {
         command.process("find|employee");
 
         //then
-        shouldPrint("[id name email\n" +
-                            "* * *\n" +
-                            "]");
+        shouldPrint("[+--+----+-----+\n" +
+                "|id|name|email|\n" +
+                "+--+----+-----+\n" +
+                "|  |    |     |\n" +
+                "+--+----+-----+\n" +
+                "]");
     }
 
     @Test
@@ -122,5 +125,4 @@ public class FindTest {
             assertEquals("Введена невірна назва таблиці: employ", e.getMessage());
         }
     }
-
 }

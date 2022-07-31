@@ -79,7 +79,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             DataSet[] dataSetColumnNames = new DataSet[1];
             DataSet temp = new DataSet();
             for (int i = 0; i < columnNames.length; i++) {
-                temp.put(columnNames[i], "*");
+                temp.put(columnNames[i], "");
             }
             dataSetColumnNames[0] = temp;
 
@@ -158,7 +158,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void createTable(String queryCreateTable) {
-
         String[] input = queryCreateTable.split("[|]");
         if (input.length < 3) {
             throw new IllegalArgumentException("Неправильна кількість параметрів: ");
