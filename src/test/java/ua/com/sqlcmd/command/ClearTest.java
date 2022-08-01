@@ -31,6 +31,7 @@ public class ClearTest {
         verify(manager).clear("employee");
         verify(view).write("Таблиця: employee очищенна");
     }
+
     @Test
     void clearCorrectTableNameNotConfirm() {
         when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
@@ -38,6 +39,7 @@ public class ClearTest {
         command.process("clear|employee");
         verify(manager, never()).clear("employee");
     }
+
     @Test
     void clearCorrectTableNameIncorrectConfirmCommand() {
         when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
@@ -67,7 +69,7 @@ public class ClearTest {
     @Test
     void validationErrorMoreThanTwoParameters() {
         try {
-            command.process("clear|asdf|asdfasf");
+            command.process("clear|firstParam|secondParam");
             fail();
         } catch (IllegalArgumentException e) {
             assertEquals("невірна кількість параметрів розділених символом '|', очікується 2, але ввели:3",

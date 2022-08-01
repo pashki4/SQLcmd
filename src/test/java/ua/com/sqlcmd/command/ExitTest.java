@@ -7,7 +7,7 @@ import ua.com.sqlcmd.view.View;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExitWithMockitoTest {
+public class ExitTest {
     private View view;
     private Command command;
 
