@@ -38,6 +38,10 @@ public class Help implements Command {
         view.write("\tfind|tableName");
         view.write("\t\tвідображення вмісту таблиці");
 
+        view.write("\tupdate|tableName|columnName|columnValue|columnName1|newValue1|...|columnNameN|newValueN");
+        view.write("\t\tоновлення значень рядків, у яких columnName = columnValue");
+
+
         view.write("\texit");
         view.write("\t\tвихід з програми");
     }

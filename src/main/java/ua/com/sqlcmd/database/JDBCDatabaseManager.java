@@ -176,13 +176,17 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void updateTableData(String tableName, int id, DataSet newValue) {
+    public void updateTableData(String tableName, String columnName, String columnValue, DataSet newValue) {
         String[] columnNames = newValue.getColumnNames();
         Object[] values = newValue.getValues();
-        String formattedColumnNames = String.join(" = ?, ", columnNames) + " = ?";
-
+        String formattedColumnNames = "";
+        if (columnNames.length == 1) {
+            formattedColumnNames = columnNames[0] + " = ?";
+        } else {
+            formattedColumnNames = String.join(" = ?, ", columnNames) + " = ?";
+        }
         String sqlUpdate = "UPDATE " + tableName + " SET " + formattedColumnNames +
-                " WHERE id = " + id;
+                " WHERE " + columnName + " = '" + columnValue + "'";
 
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password);
@@ -193,7 +197,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка оновлення значення в таблиці '%s'", tableName), e);
+            throw new RuntimeException(String.format("Помилка оновлення значення в таблиці '%s' ", tableName), e);
         }
     }
 

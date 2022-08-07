@@ -18,6 +18,7 @@ public class MainController {
                 new Exit(view),
                 new CheckConnection(view, manager),
                 new Create(view, manager),
+                new Update(view, manager),
                 new Insert(view, manager),
                 new List(view, manager),
                 new Find(view, manager),

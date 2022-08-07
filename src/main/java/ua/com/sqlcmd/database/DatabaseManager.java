@@ -15,7 +15,7 @@ public interface DatabaseManager {
 
     void createTable(String queryCreateTable);
 
-    void updateTableData(String tableName, int id, DataSet newValue);
+    void updateTableData(String tableName, String columnName, String columnValue, DataSet newValue);
 
     boolean isConnected();
 

@@ -35,9 +35,12 @@ class HelpTest {
                 " \tclear|tableName, \t\tочищення таблиці," +
                 " \tcreate|tableName|column1|column2|...|columnN, \t\tстворення таблиці," +
                 " \tinsert|tableName|column1|value1|column2|value2|...|columnN|valueN," +
-                " \t\tвставити одну строку в таблицю, " +
-                "\tlist, \t\tвідображення списку всіх таблиць," +
-                " \tfind|tableName, \t\tвідображення вмісту таблиці, \texit, \t\tвихід з програми]");
+                " \t\tвставити одну строку в таблицю," +
+                " \tlist, \t\tвідображення списку всіх таблиць," +
+                " \tfind|tableName, \t\tвідображення вмісту таблиці," +
+                " \tupdate|tableName|columnName|columnValue|columnName1|newValue1|...|columnNameN|newValueN," +
+                " \t\tоновлення значень рядків, у яких columnName = columnValue," +
+                " \texit, \t\tвихід з програми]");
     }
 
     private void shouldPrint(String expected) {

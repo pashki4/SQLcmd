@@ -41,13 +41,14 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void updateTableData(String tableName, int id, DataSet newValue) {
+    public void updateTableData(String tableName, String columnName, String columnValue, DataSet newValue) {
         validate(tableName);
         for (int i = 0; i < size; i++) {
-            if (data[i].get("id").equals(id)) {
+            if (data[i].get(columnName).equals(columnValue)) {
                 data[i].updateValue(newValue);
             }
         }
+
     }
 
     @Override

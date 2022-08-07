@@ -56,7 +56,7 @@ abstract class DatabaseManagerTest {
         coworker = new DataSet();
         coworker.put("name","happyVasya");
         coworker.put("salary",34000.11);
-        manager.updateTableData("employee", 1, coworker);
+        manager.updateTableData("employee", "id", "1", coworker);
         assertEquals("[happyVasya, 34000.11]", Arrays.toString(coworker.getValues()));
     }
 
