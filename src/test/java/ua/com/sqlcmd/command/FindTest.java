@@ -108,10 +108,10 @@ public class FindTest {
     @Test
     void cantProcessIncorrectParameterNumber() {
         try {
-            command.process("clear|asd|2asdf");
+            command.process("clear|asd|someValue");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Невірний формат, потрібно: find|tableName, а було: clear|asd|2asdf", e.getMessage());
+            assertEquals("Невірний формат, потрібно: find|tableName, а було: clear|asd|someValue", e.getMessage());
         }
     }
 

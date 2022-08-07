@@ -21,7 +21,8 @@ public class Connect implements Command {
     public void process(String command) {
         String[] inputCommands = command.split("[|]");
         if (inputCommands.length != 4) {
-            throw new IllegalArgumentException("невірна кількість параметрів розділених символом '|'," + " очікується 4, але ввели: " + inputCommands.length);
+            throw new IllegalArgumentException("невірна кількість параметрів розділених символом '|',"
+                    + " очікується 4, але ввели: " + inputCommands.length);
         }
         manager.connect(inputCommands[1], inputCommands[2], inputCommands[3]);
         view.write("Успіх!");

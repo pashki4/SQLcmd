@@ -1,5 +1,7 @@
 package ua.com.sqlcmd.database;
 
+import java.sql.SQLException;
+
 public interface DatabaseManager {
 
     void connect(String database, String userName, String password);

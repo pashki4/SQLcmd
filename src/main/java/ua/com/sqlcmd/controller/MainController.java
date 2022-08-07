@@ -48,10 +48,10 @@ public class MainController {
                         break;
                     }
                 }
-            } catch (IllegalArgumentException e) {
-                printMessage(e);
             } catch (ExitException e) {
                 System.exit(0);
+            } catch (Exception e) {
+                printMessage(e);
             }
             view.write("Введіть команду або help для переліку команд");
         }

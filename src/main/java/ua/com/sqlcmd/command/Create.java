@@ -19,21 +19,12 @@ public class Create implements Command {
 
     @Override
     public void process(String command) {
-        try {
-            manager.createTable(command);
-            String[] split = command.split("[|]");
-
-            view.write(String.format("Створено таблицю: %s", split[1]));
-        } catch (Exception e) {
-            printMessage(e);
+        String[] input = command.split("[|]");
+        if (input.length <= 2) {
+            throw new IllegalArgumentException(String.format("Неправильна кількість параметрів," +
+                    " потрібно більше 2, а було введено: %s", input.length));
         }
-    }
-
-    private void printMessage(Exception e) {
-        String message = e.getMessage();
-        if (e.getCause() != null) {
-            message += e.getCause().getMessage();
-        }
-        view.write(message);
+        manager.createTable(command);
+        view.write(String.format("Створено таблицю: %s", input[1]));
     }
 }
