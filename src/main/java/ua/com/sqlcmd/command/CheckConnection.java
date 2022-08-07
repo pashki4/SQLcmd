@@ -3,11 +3,11 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-public class IsConnected implements Command {
+public class CheckConnection implements Command {
     private DatabaseManager manager;
     private View view;
 
-    public IsConnected(View view, DatabaseManager manager) {
+    public CheckConnection(View view, DatabaseManager manager) {
         this.manager = manager;
         this.view = view;
     }

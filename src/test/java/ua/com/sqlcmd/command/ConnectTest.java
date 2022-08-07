@@ -44,7 +44,7 @@ class ConnectTest {
     @Test
     void printWhenConnected() {
         command.process("connect|mytestdb|postgres|1234");
-        shouldPrint("[Успіх!]");
+        shouldPrint("[Підключено до бази 'mytestdb']");
     }
 
     private void shouldPrint(String expected) {

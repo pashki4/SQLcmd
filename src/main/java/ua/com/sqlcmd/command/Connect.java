@@ -25,6 +25,6 @@ public class Connect implements Command {
                     + " очікується 4, але ввели: " + inputCommands.length);
         }
         manager.connect(inputCommands[1], inputCommands[2], inputCommands[3]);
-        view.write("Успіх!");
+        view.write(String.format("Підключено до бази '%s'", inputCommands[1]));
     }
 }
