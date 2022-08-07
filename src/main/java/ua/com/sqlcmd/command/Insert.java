@@ -4,6 +4,9 @@ import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Insert implements Command {
     private View view;
     private DatabaseManager manager;
@@ -21,15 +24,21 @@ public class Insert implements Command {
     @Override
     public void process(String command) {
         String[] split = command.split("[|]");
-        if (split.length <= 2 || split.length % 2 != 0) {
-            throw new IllegalArgumentException(
-                    String.format("Невірна кількість параметрів, було %s, а потрібно >= 4", split.length));
-        }
+        if (split.length <= 3 || split.length % 2 != 0) throw new IllegalArgumentException(
+                String.format("Потрібно вводити парну кількість парамтерів, та кількість повинна бути >= 4",
+                        split.length));
+
         String tableName = split[1];
+        List<String> tables = Arrays.asList(manager.getTables());
+
+        if (!tables.contains(tableName))
+            throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
+
         DataSet dataSet = new DataSet();
         for (int i = 1; i < split.length / 2; i++) {
             dataSet.put(split[i * 2], split[i * 2 + 1]);
         }
         manager.insert(dataSet, tableName);
+        view.write(String.format("Запис було успішно додано в таблицю '%s'", tableName));
     }
 }
