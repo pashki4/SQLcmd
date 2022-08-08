@@ -22,7 +22,7 @@ abstract class DatabaseManagerTest {
     @Test
     public void testGetAllTableNames() {
         String[] tableNames = manager.getTables();
-        assertEquals("[employee, airplane]", Arrays.toString(tableNames));
+        assertEquals("[employee, airplane, testtable]", Arrays.toString(tableNames));
     }
 
     @Test
