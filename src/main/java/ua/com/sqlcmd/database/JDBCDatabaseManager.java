@@ -11,7 +11,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private boolean isConnected;
 
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
-    private static final String SQL_SELECT_TABLES = "SELECT table_name\n" +
+    private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name\n" +
             " FROM information_schema.tables\n" +
             " WHERE table_schema='public'\n" +
             " AND table_type='BASE TABLE';";
@@ -35,7 +35,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public String[] getTables() {
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLES)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             String[] result = new String[100];
             int index = 0;
@@ -51,42 +51,50 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public DataSet[] getTableData(String tableName) {
-        String sqlSelectRowCount = "SELECT COUNT(*) FROM public." + tableName + ";";
         String sqlSelectAll = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectRowCount);
-            ResultSet resultSet = preparedStatement.executeQuery();
+                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
+             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(sqlSelectAll)) {
+            ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
 
-            resultSet.next();
-            int rowCount = resultSet.getInt(1);
-
-            DataSet[] dataSet = new DataSet[rowCount];
-            preparedStatement = connection.prepareStatement(sqlSelectAll);
-            resultSet = preparedStatement.executeQuery();
             String[] columnNames = getColumnNames(resultSet);
-            DataSet[] dataSetColumnNames = new DataSet[1];
+            DataSet[] columnNamesWithEmptyValues = new DataSet[1];
             DataSet temp = new DataSet();
             for (int i = 0; i < columnNames.length; i++) {
                 temp.put(columnNames[i], "");
             }
-            dataSetColumnNames[0] = temp;
+            columnNamesWithEmptyValues[0] = temp;
 
-            int dataSetFreeIndex = 0;
-            while (resultSet.next()) {
-                DataSet newDataSet = new DataSet();
-                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                    newDataSet.put(resultSet.getMetaData().getColumnName(i), resultSet.getObject(i));
-                }
-                dataSet[dataSetFreeIndex++] = newDataSet;
-            }
-            if (dataSet.length != 0) {
-                return dataSet;
+            int rowCount = getRowCount(tableName);
+            if (rowCount == 0) {
+                return columnNamesWithEmptyValues;
             } else {
-                return dataSetColumnNames;
+                DataSet[] result = new DataSet[rowCount];
+                int dataSetFreeIndex = 0;
+                while (resultSet.next()) {
+                    DataSet newDataSet = new DataSet();
+                    for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                        newDataSet.put(resultSet.getMetaData().getColumnName(i), resultSet.getObject(i));
+                    }
+                    result[dataSetFreeIndex++] = newDataSet;
+                }
+                return result;
             }
         } catch (SQLException e) {
             throw new RuntimeException(String.format("Помилка отримання вмісту таблиці '%s'", tableName), e);
+        }
+    }
+
+    private int getRowCount(String tableName) {
+        String sqlSelectRowCount = "SELECT COUNT(*) FROM public." + tableName + ";";
+        try (Connection connection =
+                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
+             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(sqlSelectRowCount)) {
+            ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -99,6 +107,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
         return columnNames;
     }
+
 
     @Override
     public void clear(String tableName) {
