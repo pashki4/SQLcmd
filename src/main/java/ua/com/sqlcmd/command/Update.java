@@ -33,8 +33,8 @@ public class Update implements Command {
         String columnValue = split[3];
 
         DataSet newDataSet = new DataSet();
-        for (int i = 1; i * 4 < split.length; i++) {
-            newDataSet.put(split[i * 4], split[i * 4 + 1]);
+        for (int i = 4; i + 1 < split.length; i = i + 2) {
+            newDataSet.put(split[i], split[i + 1]);
         }
         manager.updateTableData(tableName, columnName, columnValue, newDataSet);
         view.write(String.format("Оновлено значення для рядків, де '%s' = '%s'", columnName, columnValue));
