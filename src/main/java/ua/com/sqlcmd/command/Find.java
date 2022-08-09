@@ -3,6 +3,7 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

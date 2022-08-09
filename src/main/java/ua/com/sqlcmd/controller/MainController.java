@@ -38,7 +38,7 @@ public class MainController {
     private void doWork() {
         view.write("Вітаю юзер!");
         view.write("Введи, данні для підключення у такому форматі: connect|database|userName|password");
-        view.write("або help, для переліку команд");
+        view.write("або help, для списку команд");
 
         while (true) {
             try {
@@ -54,7 +54,7 @@ public class MainController {
             } catch (Exception e) {
                 printMessage(e);
             }
-            view.write("Введіть команду або help для переліку команд");
+            view.write("Введіть команду або help для списку команд");
         }
     }
 

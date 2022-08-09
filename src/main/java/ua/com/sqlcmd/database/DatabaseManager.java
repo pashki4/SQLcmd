@@ -1,10 +1,9 @@
 package ua.com.sqlcmd.database;
 
-import java.sql.SQLException;
-
 public interface DatabaseManager {
 
     void connect(String database, String userName, String password);
+
     String[] getTables();
 
     DataSet[] getTableData(String tableName);
