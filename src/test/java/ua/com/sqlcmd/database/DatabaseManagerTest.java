@@ -14,19 +14,19 @@ abstract class DatabaseManagerTest {
     public abstract DatabaseManager getDatabaseManager();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         manager = getDatabaseManager();
         manager.connect("mytestdb", "postgres", "1234");
     }
 
     @Test
-    public void testGetAllTableNames() {
+    void testGetAllTableNames() {
         String[] tableNames = manager.getTables();
         assertEquals("[employee, airplane, testtable]", Arrays.toString(tableNames));
     }
 
     @Test
-    public void testGetTableData() {
+    void testGetTableData() {
         //given
         manager.clear("employee");
 
@@ -46,7 +46,7 @@ abstract class DatabaseManagerTest {
     }
 
     @Test
-    public void testUpdateTableData() {
+    void testUpdateTableData() {
         manager.clear("employee");
         DataSet coworker = new DataSet();
         coworker.put("id", 1);
@@ -54,8 +54,8 @@ abstract class DatabaseManagerTest {
         coworker.put("salary", 1000.09);
         manager.insert(coworker, "employee");
         coworker = new DataSet();
-        coworker.put("name","happyVasya");
-        coworker.put("salary",34000.11);
+        coworker.put("name", "happyVasya");
+        coworker.put("salary", 34000.11);
         manager.updateTableData("employee", "id", "1", coworker);
         assertEquals("[happyVasya, 34000.11]", Arrays.toString(coworker.getValues()));
     }
