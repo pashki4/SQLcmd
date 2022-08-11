@@ -1,6 +1,7 @@
 package ua.com.sqlcmd.command;
 
 import ua.com.sqlcmd.database.DataSet;
+import ua.com.sqlcmd.database.DataSetImpl;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
@@ -33,7 +34,7 @@ public class Insert implements Command {
         if (!tables.contains(tableName))
             throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
 
-        DataSet dataSet = new DataSet();
+        DataSet dataSet = new DataSetImpl();
         for (int i = 1; i < split.length / 2; i++) {
             dataSet.put(split[i * 2], split[i * 2 + 1]);
         }

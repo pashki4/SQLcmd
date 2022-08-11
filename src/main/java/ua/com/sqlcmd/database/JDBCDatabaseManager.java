@@ -1,9 +1,7 @@
 package ua.com.sqlcmd.database;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
@@ -23,7 +21,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     private static String prepareValues(DataSet dataSet) {
         String questionMark = "?";
-        String[] questionMarkSeq = new String[dataSet.getValues().length];
+        String[] questionMarkSeq = new String[dataSet.getValues().size()];
         Arrays.fill(questionMarkSeq, questionMark);
         return String.join(", ", questionMarkSeq);
     }
@@ -60,33 +58,33 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public DataSet[] getTableData(String tableName) {
+    public List<DataSet> getTableData(String tableName) {
         String sqlSelectAll = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection(DATABASE_URL + database, userName, password);
              PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(sqlSelectAll)) {
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
 
-            String[] columnNames = getColumnNames(resultSet);
-            DataSet[] columnNamesWithEmptyValues = new DataSet[1];
-            DataSet temp = new DataSet();
-            for (int i = 0; i < columnNames.length; i++) {
-                temp.put(columnNames[i], "");
+            Set<String> columnNames = getColumnNames(resultSet);
+            var listNames = new ArrayList<>(columnNames);
+            List<DataSet> columnNamesWithEmptyValues = new ArrayList<>(1);
+            DataSet temp = new DataSetImpl();
+            for (int i = 0; i < columnNames.size(); i++) {
+                temp.put(listNames.get(i), "");
             }
-            columnNamesWithEmptyValues[0] = temp;
+            columnNamesWithEmptyValues.add(temp);
 
             int rowCount = getRowCount(tableName);
             if (rowCount == 0) {
                 return columnNamesWithEmptyValues;
             } else {
-                DataSet[] result = new DataSet[rowCount];
-                int dataSetFreeIndex = 0;
+                List<DataSet> result = new ArrayList<>(rowCount);
                 while (resultSet.next()) {
-                    DataSet newDataSet = new DataSet();
-                    for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-                        newDataSet.put(resultSet.getMetaData().getColumnName(i), resultSet.getObject(i));
+                    DataSet newDataSet = new DataSetImpl();
+                    for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                        newDataSet.put(resultSet.getMetaData().getColumnName(i + 1), resultSet.getObject(i + 1));
                     }
-                    result[dataSetFreeIndex++] = newDataSet;
+                    result.add(newDataSet);
                 }
                 return result;
             }
@@ -108,12 +106,13 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
 
-    private String[] getColumnNames(ResultSet resultSet) throws SQLException {
+    private Set<String> getColumnNames(ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
-        String[] columnNames = new String[columnCount];
+        Set<String> columnNames = new LinkedHashSet<>();
+        var listNames = new ArrayList<>(columnNames);
         int index = 1;
         while (index <= columnCount) {
-            columnNames[index - 1] = resultSet.getMetaData().getColumnName(index++);
+            listNames.add(resultSet.getMetaData().getColumnName(index++));
         }
         return columnNames;
     }
@@ -138,10 +137,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password);
              PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert)) {
-            Object[] input = dataSet.getValues();
+            List<Object> input = dataSet.getValues();
             int parameterIndex = 1;
-            for (int i = 0; i < dataSet.getValues().length; i++) {
-                preparedStatement.setObject(parameterIndex++, input[i]);
+            for (int i = 0; i < dataSet.getValues().size(); i++) {
+                preparedStatement.setObject(parameterIndex++, input.get(i));
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -184,11 +183,12 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void updateTableData(String tableName, String columnName, String columnValue, DataSet newValue) {
-        String[] columnNames = newValue.getColumnNames();
-        Object[] values = newValue.getValues();
+        Set<String> columnNames = newValue.getColumnNames();
+        var listNames = new ArrayList<>(columnNames);
+        List<Object> values = newValue.getValues();
         String formattedColumnNames = "";
-        if (columnNames.length == 1) {
-            formattedColumnNames = columnNames[0] + " = ?";
+        if (columnNames.size() == 1) {
+            formattedColumnNames = listNames.get(0) + " = ?";
         } else {
             formattedColumnNames = String.join(" = ?, ", columnNames) + " = ?";
         }
@@ -199,8 +199,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 .getConnection(DATABASE_URL + database, userName, password);
              PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)) {
             int parameterIndex = 1;
-            for (int i = 0; i < columnNames.length; i++) {
-                preparedStatement.setObject(parameterIndex++, values[i]);
+            for (int i = 0; i < listNames.size(); i++) {
+                preparedStatement.setObject(parameterIndex++, values.get(i));
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

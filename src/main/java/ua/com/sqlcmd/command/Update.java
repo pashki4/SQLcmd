@@ -1,6 +1,7 @@
 package ua.com.sqlcmd.command;
 
 import ua.com.sqlcmd.database.DataSet;
+import ua.com.sqlcmd.database.DataSetImpl;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
@@ -43,7 +44,7 @@ public class Update implements Command {
         String columnName = split[2];
         String columnValue = split[3];
 
-        DataSet newDataSet = new DataSet();
+        DataSet newDataSet = new DataSetImpl();
         for (int i = 4; i + 1 < split.length; i = i + 2) {
             newDataSet.put(split[i], split[i + 1]);
         }

@@ -4,9 +4,7 @@ import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Find implements Command {
     private static final String PLUS = "+";
@@ -39,14 +37,14 @@ public class Find implements Command {
             if (!strings.contains(tableName)) {
                 throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
             }
-            DataSet[] tableData = manager.getTableData(tableName);
+            List<DataSet> tableData = manager.getTableData(tableName);
             printTableData(tableData);
         }
     }
 
-    private void printTableData(DataSet[] dataSet) {
+    private void printTableData(List<DataSet> dataSet) {
         findMaxLengthInRows(dataSet);
-        String[] columnNames = dataSet[0].getColumnNames();
+        Set<String> columnNames = dataSet.get(0).getColumnNames();
         StringBuilder sb = new StringBuilder();
 
         addContour(columnNames, sb);
@@ -57,25 +55,25 @@ public class Find implements Command {
         view.write(sb.toString());
     }
 
-    private void addValues(DataSet[] dataSet, StringBuilder sb) {
-        String[] columnNames = dataSet[0].getColumnNames();
+    private void addValues(List<DataSet> dataSet, StringBuilder sb) {
+        Set<String> columnNames = dataSet.get(0).getColumnNames();
         for (DataSet data : dataSet) {
-            Object[] objects = data.getValues();
-            String[] values = convertFromObjToString(objects);
-
-            for (int i = 0; i < values.length; i++) {
-                int maxWidth = maxLength.get(columnNames[i]);
-                int spaceSize = maxWidth - values[i].length();
+            List<Object> objects = data.getValues();
+            List<String> values = convertFromObjToString(objects);
+            var listNames = new ArrayList<>(columnNames);
+            for (int i = 0; i < values.size(); i++) {
+                int maxWidth = maxLength.get(listNames.get(i));
+                int spaceSize = maxWidth - values.get(i).length();
                 int prefixSize = spaceSize / 2;
                 int suffixSize = (spaceSize + 1) / 2;
-                if (maxWidth > values[i].length()) {
+                if (maxWidth > values.get(i).length()) {
                     sb.append(DELIMITER)
                             .append(WHITESPACE.repeat(prefixSize))
-                            .append(values[i])
+                            .append(values.get(i))
                             .append(WHITESPACE.repeat(suffixSize));
                 } else {
                     sb.append(DELIMITER)
-                            .append(values[i]);
+                            .append(values.get(i));
                 }
             }
             sb.append(DELIMITER)
@@ -83,15 +81,15 @@ public class Find implements Command {
         }
     }
 
-    private String[] convertFromObjToString(Object[] values) {
-        String[] result = new String[values.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = String.valueOf(values[i]);
+    private List<String> convertFromObjToString(List<Object> values) {
+        List<String> result = new ArrayList<>(values.size());
+        for (Object value : values) {
+            result.add(String.valueOf(value));
         }
         return result;
     }
 
-    private void addContour(String[] columnNames, StringBuilder sb) {
+    private void addContour(Set<String> columnNames, StringBuilder sb) {
         for (String columnName : columnNames) {
             int width = maxLength.get(columnName);
             sb.append(PLUS).append(MINUS.repeat(width));
@@ -100,8 +98,8 @@ public class Find implements Command {
                 .append(NEW_LINE);
     }
 
-    private void addColumnNames(DataSet[] dataSets, StringBuilder sb) {
-        String[] columnNames = dataSets[0].getColumnNames();
+    private void addColumnNames(List<DataSet> dataSets, StringBuilder sb) {
+        Set<String> columnNames = dataSets.get(0).getColumnNames();
         for (String columnName : columnNames) {
             int maxWidth = maxLength.get(columnName);
             int spaceSize = maxWidth - columnName.length();
@@ -121,22 +119,24 @@ public class Find implements Command {
                 .append(NEW_LINE);
     }
 
-    private void findMaxLengthInRows(DataSet[] dataSets) {
-        String[] columnNames = null;
+    private void findMaxLengthInRows(List<DataSet> dataSet) {
+        //TODO change to stream API
+        Set<String> columnNames = null;
         int maxLength;
-        if (dataSets.length != 0) {
-            columnNames = dataSets[0].getColumnNames();
+        if (dataSet.size() != 0) {
+            columnNames = dataSet.get(0).getColumnNames();
 
-            for (int i = 0; i < columnNames.length; i++) {
-                maxLength = columnNames[i].length();
-                for (DataSet data : dataSets) {
-                    Object o = data.get(columnNames[i]);
+            for (int i = 0; i < columnNames.size(); i++) {
+                List<String> listNames = new ArrayList<>(columnNames);
+                maxLength = listNames.get(i).length();
+                for (DataSet data : dataSet) {
+                    Object o = data.get(listNames.get(i));
                     String value = String.valueOf(o);
                     if (value.length() > maxLength) {
                         maxLength = value.length();
                     }
                 }
-                this.maxLength.put(columnNames[i], maxLength);
+                this.maxLength.put(listNames.get(i), maxLength);
             }
         }
     }

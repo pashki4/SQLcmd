@@ -6,11 +6,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ua.com.sqlcmd.database.DataSet;
+import ua.com.sqlcmd.database.DataSetImpl;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -34,17 +37,17 @@ public class FindTest {
     void printTableData() {
         when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
 
-        DataSet employee1 = new DataSet();
+        DataSet employee1 = new DataSetImpl();
         employee1.put("id", 11);
         employee1.put("name", "Piter");
         employee1.put("email", "piter@gmail.com");
 
-        DataSet employee2 = new DataSet();
+        DataSet employee2 = new DataSetImpl();
         employee2.put("id", 15);
         employee2.put("name", "Leyla");
         employee2.put("email", "leyla@gmail.com");
 
-        DataSet[] data = new DataSet[]{employee1, employee2};
+        List<DataSet> data = new ArrayList<>(Arrays.asList(employee1, employee2));
 
         when(manager.getTableData("employee")).thenReturn(data);
 
@@ -71,11 +74,11 @@ public class FindTest {
     void printEmptyTableData() {
         when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
 
-        DataSet empty = new DataSet();
+        DataSet empty = new DataSetImpl();
         empty.put("id", "");
         empty.put("name", "");
         empty.put("email", "");
-        DataSet[] data = new DataSet[]{empty};
+        List<DataSet> data = new ArrayList<>(Arrays.asList(empty));
 
         when(manager.getTableData("employee")).thenReturn(data);
 

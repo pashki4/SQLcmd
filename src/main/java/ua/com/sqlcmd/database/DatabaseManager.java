@@ -1,5 +1,6 @@
 package ua.com.sqlcmd.database;
 
+import java.util.List;
 import java.util.Set;
 
 public interface DatabaseManager {
@@ -8,7 +9,7 @@ public interface DatabaseManager {
 
     Set<String> getTables();
 
-    DataSet[] getTableData(String tableName);
+    List<DataSet> getTableData(String tableName);
 
     void clear(String table);
 
