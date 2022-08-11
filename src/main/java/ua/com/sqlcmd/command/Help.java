@@ -3,7 +3,7 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.view.View;
 
 public class Help implements Command {
-    private View view;
+    private final View view;
 
     public Help(View view) {
         this.view = view;

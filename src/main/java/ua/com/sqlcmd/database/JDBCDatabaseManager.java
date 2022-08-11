@@ -2,19 +2,31 @@ package ua.com.sqlcmd.database;
 
 import java.sql.*;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class JDBCDatabaseManager implements DatabaseManager {
-
-    private String database;
-    private String userName;
-    private String password;
-    private boolean isConnected;
 
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
     private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name\n" +
             " FROM information_schema.tables\n" +
             " WHERE table_schema='public'\n" +
             " AND table_type='BASE TABLE';";
+    private String database;
+    private String userName;
+    private String password;
+    private boolean isConnected;
+
+    private static String prepareColumnNames(DataSet dataSet) {
+        return String.join(", ", dataSet.getColumnNames());
+    }
+
+    private static String prepareValues(DataSet dataSet) {
+        String questionMark = "?";
+        String[] questionMarkSeq = new String[dataSet.getValues().length];
+        Arrays.fill(questionMarkSeq, questionMark);
+        return String.join(", ", questionMarkSeq);
+    }
 
     @Override
     public void connect(String database, String userName, String password) {
@@ -32,17 +44,15 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTables() {
+    public Set<String> getTables() {
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password);
              PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES)) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            String[] result = new String[100];
-            int index = 0;
+            Set<String> result = new LinkedHashSet<>();
             while (resultSet.next()) {
-                result[index++] = resultSet.getString("table_name");
+                result.add(resultSet.getString("table_name"));
             }
-            result = Arrays.copyOfRange(result, 0, index);
             return result;
         } catch (SQLException e) {
             throw new RuntimeException("Помилка отримання списку таблиць ", e);
@@ -108,7 +118,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return columnNames;
     }
 
-
     @Override
     public void clear(String tableName) {
         String sqlDelete = "DELETE FROM " + tableName + ";";
@@ -138,17 +147,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(String.format("Помилка додавання запису до таблиці '%s'", tableName), e);
         }
-    }
-
-    private static String prepareColumnNames(DataSet dataSet) {
-        return String.join(", ", dataSet.getColumnNames());
-    }
-
-    private static String prepareValues(DataSet dataSet) {
-        String questionMark = "?";
-        String[] questionMarkSeq = new String[dataSet.getValues().length];
-        Arrays.fill(questionMarkSeq, questionMark);
-        return String.join(", ", questionMarkSeq);
     }
 
     @Override

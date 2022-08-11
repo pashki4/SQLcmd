@@ -7,6 +7,9 @@ import org.mockito.Mockito;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +40,7 @@ class UpdateTest {
 
     @Test
     void cantProcessNotEnoughParameters() {
-        Mockito.when(manager.getTables()).thenReturn(new String[]{"table1", "table2"});
+        Mockito.when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("table1", "table2")));
         try {
             command.process("help|table1|columnName|columnValue|columnName1");
             fail();
@@ -48,7 +51,7 @@ class UpdateTest {
 
     @Test
     void cantProcessWrongTableName() {
-        Mockito.when(manager.getTables()).thenReturn(new String[]{"table1", "table2"});
+        Mockito.when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("table1", "table2")));
         try {
             command.process("update|wrongTableName|columnName|columnValue|column1|value1|column2|value2");
             fail();
@@ -59,7 +62,7 @@ class UpdateTest {
 
     @Test
     void correctUpdateMessage() {
-        when(manager.getTables()).thenReturn(new String[]{"table1", "table2"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("table1", "table2")));
         command.process("update|table1|id|123|column1|value1");
         shouldPrint("[Оновлено значення для рядків, де 'id' = '123']");
     }

@@ -7,6 +7,9 @@ import org.mockito.Mockito;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
@@ -40,7 +43,7 @@ class InsertTest {
 
     @Test
     void cantProcessWrongTableName() {
-        Mockito.when(manager.getTables()).thenReturn(new String[]{"table1","table2"});
+        Mockito.when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("table1","table2")));
         try {
             command.process("insert|wrongTableName|column1|value1|column2|value2");
             fail();
@@ -51,7 +54,7 @@ class InsertTest {
 
     @Test
     void addDataToTable() {
-        Mockito.when(manager.getTables()).thenReturn(new String[]{"table1", "table2"});
+        Mockito.when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("table1", "table2")));
         command.process("insert|table1|column1|value1|column2|value2");
         shouldPrint("[Запис було успішно додано в таблицю 'table1']");
     }

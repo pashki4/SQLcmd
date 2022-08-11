@@ -8,11 +8,13 @@ import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
-class ListTest {
+class TableListTest {
     private View view;
     private DatabaseManager manager;
     private Command command;
@@ -21,7 +23,7 @@ class ListTest {
     void setup() {
         view = Mockito.mock(View.class);
         manager = Mockito.mock(DatabaseManager.class);
-        command = new List(view, manager);
+        command = new TableList(view, manager);
     }
 
     @Test
@@ -32,7 +34,7 @@ class ListTest {
 
     @Test
     void getTablesList() {
-        String[] tables = {"table1", "table2", "table3"};
+        Set<String> tables = new LinkedHashSet<>(Arrays.asList("table1", "table2", "table3"));
         Mockito.when(manager.getTables()).thenReturn(tables);
         command.process("list");
         shouldPrint("[[table1, table2, table3]]");

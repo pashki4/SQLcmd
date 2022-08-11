@@ -3,14 +3,14 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import java.util.Arrays;
+import java.util.Set;
 
-public class List implements Command {
+public class TableList implements Command {
 
     private final DatabaseManager manager;
     private final View view;
 
-    public List(View view, DatabaseManager manager) {
+    public TableList(View view, DatabaseManager manager) {
         this.view = view;
         this.manager = manager;
     }
@@ -22,8 +22,7 @@ public class List implements Command {
 
     @Override
     public void process(String command) {
-        String[] tables = manager.getTables();
-        String result = Arrays.toString(tables);
-        view.write(result);
+        Set<String> tables = manager.getTables();
+        view.write(tables.toString());
     }
 }

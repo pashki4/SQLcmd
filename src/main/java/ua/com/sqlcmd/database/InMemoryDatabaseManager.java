@@ -1,19 +1,21 @@
 package ua.com.sqlcmd.database;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class InMemoryDatabaseManager implements DatabaseManager {
     private DataSet[] data = new DataSet[100];
     private int size;
-    private boolean isConnected = true;
+    private final boolean isConnected = true;
 
     @Override
     public void connect(String database, String userName, String password) {
     }
 
     @Override
-    public String[] getTables() {
-        return new String[]{"employee", "airplane", "testtable"};
+    public Set<String> getTables() {
+        return new LinkedHashSet<>(Arrays.asList("employee", "airplane", "testtable"));
     }
 
     @Override

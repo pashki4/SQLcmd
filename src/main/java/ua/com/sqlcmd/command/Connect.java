@@ -4,8 +4,8 @@ import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
 public class Connect implements Command {
-    private View view;
-    private DatabaseManager manager;
+    private final View view;
+    private final DatabaseManager manager;
 
     public Connect(View view, DatabaseManager manager) {
         this.view = view;

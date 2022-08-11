@@ -1,10 +1,12 @@
 package ua.com.sqlcmd.database;
 
+import java.util.Set;
+
 public interface DatabaseManager {
 
     void connect(String database, String userName, String password);
 
-    String[] getTables();
+    Set<String> getTables();
 
     DataSet[] getTableData(String tableName);
 

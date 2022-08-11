@@ -4,15 +4,17 @@ import ua.com.sqlcmd.command.*;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.List;
+
 public class MainController {
-    private java.util.List<Command> commands;
-    private View view;
-    private DatabaseManager manager;
+    private final List<Command> commands;
+    private final View view;
+    private final DatabaseManager manager;
 
     public MainController(View view, DatabaseManager manager) {
         this.view = view;
         this.manager = manager;
-        commands = java.util.List.of(
+        commands = List.of(
                 new Connect(view, manager),
                 new Help(view),
                 new Exit(view),
@@ -20,7 +22,7 @@ public class MainController {
                 new Create(view, manager),
                 new Update(view, manager),
                 new Insert(view, manager),
-                new List(view, manager),
+                new TableList(view, manager),
                 new Find(view, manager),
                 new Clear(view, manager),
                 new Unsupported(view)

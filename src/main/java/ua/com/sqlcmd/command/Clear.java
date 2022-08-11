@@ -3,12 +3,11 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 public class Clear implements Command {
-    private View view;
-    private DatabaseManager manager;
+    private final View view;
+    private final DatabaseManager manager;
 
     public Clear(View view, DatabaseManager manager) {
         this.view = view;
@@ -29,7 +28,7 @@ public class Clear implements Command {
                     " очікується 2, але ввели:" + split.length);
         }
         String tableName = split[1];
-        List<String> tables = Arrays.asList(manager.getTables());
+        Set<String> tables = manager.getTables();
 
         if (!tables.contains(tableName)) {
             throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);

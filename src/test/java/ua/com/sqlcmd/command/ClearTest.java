@@ -7,6 +7,9 @@ import org.mockito.MockitoAnnotations;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -25,7 +28,7 @@ public class ClearTest {
 
     @Test
     void clearCorrectTableNameConfirm() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
         when(view.read()).thenReturn("yes");
         command.process("clear|employee");
         verify(manager).clear("employee");
@@ -34,7 +37,7 @@ public class ClearTest {
 
     @Test
     void clearCorrectTableNameNotConfirm() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
         when(view.read()).thenReturn("no");
         command.process("clear|employee");
         verify(manager, never()).clear("employee");
@@ -42,7 +45,7 @@ public class ClearTest {
 
     @Test
     void clearCorrectTableNameIncorrectConfirmCommand() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
         when(view.read()).thenReturn("i don't know");
         try {
             command.process("clear|employee");
@@ -79,7 +82,7 @@ public class ClearTest {
 
     @Test
     void validationProcessWrongTableName() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
         try {
             command.process("clear|notExistentTable");
             fail();

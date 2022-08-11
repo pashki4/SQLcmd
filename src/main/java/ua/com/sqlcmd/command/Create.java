@@ -4,8 +4,8 @@ import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
 public class Create implements Command {
-    private View view;
-    private DatabaseManager manager;
+    private final View view;
+    private final DatabaseManager manager;
 
     public Create(View view, DatabaseManager manager) {
         this.view = view;

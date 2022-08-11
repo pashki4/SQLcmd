@@ -4,20 +4,19 @@ import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Find implements Command {
-    private View view;
-    private DatabaseManager manager;
-    private Map<String, Integer> maxLength = new HashMap<>();
     private static final String PLUS = "+";
     private static final String MINUS = "-";
     private static final String DELIMITER = "|";
     private static final String WHITESPACE = " ";
     private static final String NEW_LINE = "\n";
+    private final View view;
+    private final DatabaseManager manager;
+    private final Map<String, Integer> maxLength = new HashMap<>();
 
     public Find(View view, DatabaseManager manager) {
         this.view = view;
@@ -36,7 +35,7 @@ public class Find implements Command {
             throw new IllegalArgumentException(String.format("Невірний формат, потрібно: find|tableName, а було: %s", command));
         } else {
             String tableName = input[1];
-            List<String> strings = Arrays.asList(manager.getTables());
+            Set<String> strings = manager.getTables();
             if (!strings.contains(tableName)) {
                 throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
             }

@@ -3,7 +3,7 @@ package ua.com.sqlcmd.command;
 import ua.com.sqlcmd.view.View;
 
 public class Unsupported implements Command {
-    private View view;
+    private final View view;
 
     public Unsupported(View view) {
         this.view = view;

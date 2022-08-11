@@ -1,31 +1,8 @@
 package ua.com.sqlcmd.database;
 
 public class DataSet {
-    private Data[] data = new Data[100]; //TODO change magic number
+    private final Data[] data = new Data[100]; //TODO change magic number
     private int freeIndex = 0;
-
-    static class Data {
-        private String name;
-        private Object value;
-
-        Data(String name, Object value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return name + " : " + value;
-        }
-    }
 
     public void put(String name, Object value) {
         data[freeIndex++] = new Data(name, value);
@@ -53,6 +30,7 @@ public class DataSet {
             for (int j = 0; j < freeIndex; j++) {
                 if (newData.name.equals(data[j].name)) {
                     data[i].value = newData.value;
+                    break;
                 }
             }
         }
@@ -75,5 +53,28 @@ public class DataSet {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    static class Data {
+        private final String name;
+        private Object value;
+
+        Data(String name, Object value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return name + " : " + value;
+        }
     }
 }

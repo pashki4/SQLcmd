@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,8 +22,8 @@ abstract class DatabaseManagerTest {
 
     @Test
     void testGetAllTableNames() {
-        String[] tableNames = manager.getTables();
-        assertEquals("[employee, airplane, testtable]", Arrays.toString(tableNames));
+        Set<String> tableNames = manager.getTables();
+        assertEquals("[employee, airplane, testtable]", tableNames.toString());
     }
 
     @Test

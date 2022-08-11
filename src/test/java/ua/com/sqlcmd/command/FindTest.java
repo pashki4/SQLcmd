@@ -8,6 +8,10 @@ import org.mockito.MockitoAnnotations;
 import ua.com.sqlcmd.database.DataSet;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +32,7 @@ public class FindTest {
 
     @Test
     void printTableData() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
 
         DataSet employee1 = new DataSet();
         employee1.put("id", 11);
@@ -65,7 +69,7 @@ public class FindTest {
 
     @Test
     void printEmptyTableData() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
 
         DataSet empty = new DataSet();
         empty.put("id", "");
@@ -118,7 +122,7 @@ public class FindTest {
 
     @Test
     void cantProcessIncorrectTableName() {
-        when(manager.getTables()).thenReturn(new String[]{"employee", "airplane"});
+        when(manager.getTables()).thenReturn(new LinkedHashSet<>(Arrays.asList("employee", "airplane")));
         try {
             command.process("clear|employ");
             fail();

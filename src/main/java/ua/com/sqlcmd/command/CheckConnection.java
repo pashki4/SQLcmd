@@ -4,8 +4,8 @@ import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
 public class CheckConnection implements Command {
-    private DatabaseManager manager;
-    private View view;
+    private final DatabaseManager manager;
+    private final View view;
 
     public CheckConnection(View view, DatabaseManager manager) {
         this.manager = manager;
