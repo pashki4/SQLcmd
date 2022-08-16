@@ -9,9 +9,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private static final String QUESTION_MARK = "?";
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
     private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name" + NEW_LINE
-                                                       + " FROM information_schema.tables" + NEW_LINE
-                                                       + " WHERE table_schema='public'" + NEW_LINE
-                                                       + " AND table_type='BASE TABLE';";
+            + " FROM information_schema.tables" + NEW_LINE
+            + " WHERE table_schema='public'" + NEW_LINE
+            + " AND table_type='BASE TABLE';";
     private String database;
     private String userName;
     private String password;
@@ -26,7 +26,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             isConnected = true;
         } catch (SQLException e) {
             throw new RuntimeException("Не можу отримати з'єднання з такими параметрами: %n"
-                            + "база: %s, юзер: %s, пароль: %s%n".formatted(database, userName, password), e);
+                    + "база: %s, юзер: %s, пароль: %s%n".formatted(database, userName, password), e);
         }
     }
 
@@ -48,63 +48,75 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public List<DataSet> getTableData(String tableName) {
-        String sqlSelectAll = "SELECT * FROM public." + tableName + ";";
+        String selectAllSQL = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(sqlSelectAll)) {
+             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectAllSQL)) {
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
-
-            Set<String> columnNames = getColumnNames(resultSet);
-            var listNames = new ArrayList<>(columnNames);
-            List<DataSet> columnNamesWithEmptyValues = new ArrayList<>(1);
-            DataSet temp = new DataSetImpl();
-            for (int i = 0; i < columnNames.size(); i++) {
-                temp.put(listNames.get(i), "");
-            }
-            columnNamesWithEmptyValues.add(temp);
 
             int rowCount = getRowCount(tableName);
             if (rowCount == 0) {
-                return columnNamesWithEmptyValues;
+                DataSet emptyDataSetWithColumnNames = createEmptyDataSetWithNames(resultSet);
+                return getEmptyListWithNames(emptyDataSetWithColumnNames);
             } else {
-                List<DataSet> result = new ArrayList<>(rowCount);
-                while (resultSet.next()) {
-                    DataSet newDataSet = new DataSetImpl();
-                    for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                        newDataSet.put(resultSet.getMetaData().getColumnName(i + 1),
-                                resultSet.getObject(i + 1));
-                    }
-                    result.add(newDataSet);
-                }
-                return result;
+                return getAllData(resultSet, rowCount);
             }
         } catch (SQLException e) {
             throw new RuntimeException("помилка отримання вмісту таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
-    private int getRowCount(String tableName) {
-        String sqlSelectRowCount = "SELECT COUNT(*) FROM public." + tableName + ";";
-        try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(sqlSelectRowCount)) {
-            ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private static List<DataSet> getAllData(ResultSet resultSet, int rowCount) throws SQLException {
+        List<DataSet> result = new ArrayList<>(rowCount);
+        while (resultSet.next()) {
+            DataSet temp = new DataSetImpl();
+            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+                temp.put(resultSet.getMetaData().getColumnName(i + 1),
+                        resultSet.getObject(i + 1));
+            }
+            result.add(temp);
         }
+        return result;
+    }
+
+    private static List<DataSet> getEmptyListWithNames(DataSet temp) {
+        List<DataSet> columnNamesWithEmptyValues = new ArrayList<>(1);
+        columnNamesWithEmptyValues.add(temp);
+        return columnNamesWithEmptyValues;
+    }
+
+    private DataSet createEmptyDataSetWithNames(ResultSet resultSet) throws SQLException {
+        Set<String> columnNames = getColumnNames(resultSet);
+
+        DataSet temp = new DataSetImpl();
+        for (String columnName : columnNames) {
+            temp.put(columnName, "");
+        }
+        return temp;
     }
 
     private Set<String> getColumnNames(ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         Set<String> columnNames = new LinkedHashSet<>();
-        var listNames = new ArrayList<>(columnNames);
         int index = 1;
         while (index <= columnCount) {
-            listNames.add(resultSet.getMetaData().getColumnName(index++));
+            columnNames.add(resultSet.getMetaData().getColumnName(index++));
         }
         return columnNames;
+    }
+
+    private int getRowCount(String tableName) {
+        String selectRowCountSQL = "SELECT COUNT(*) FROM public." + tableName + ";";
+        try (Connection connection =
+                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
+             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectRowCountSQL)) {
+            ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
+            resultSet.next();
+            int columnIndex = 1;
+            return resultSet.getInt(columnIndex);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
