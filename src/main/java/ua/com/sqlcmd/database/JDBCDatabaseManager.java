@@ -33,8 +33,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public Set<String> getTables() {
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES)) {
+                .getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES);
             ResultSet resultSet = preparedStatement.executeQuery();
             Set<String> result = new LinkedHashSet<>();
             while (resultSet.next()) {
@@ -50,8 +50,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public List<DataSet> getTableData(String tableName) {
         String selectAllSQL = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectAllSQL)) {
+                     DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectAllSQL);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
 
             int rowCount = getRowCount(tableName);
@@ -108,8 +108,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private int getRowCount(String tableName) {
         String selectRowCountSQL = "SELECT COUNT(*) FROM public." + tableName + ";";
         try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectRowCountSQL)) {
+                     DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectRowCountSQL);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
             resultSet.next();
             int columnIndex = 1;
@@ -123,8 +123,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void clear(String tableName) {
         String sqlDelete = "DELETE FROM " + tableName + ";";
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete)) {
+                .getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("помилка очищення таблиці '%s'%n".formatted(tableName), e);
@@ -137,8 +137,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
         String values = prepareValues(dataSet);
         String sqlInsert = "INSERT INTO public." + tableName + " (" + columnNames + ") VALUES (" + values + ")";
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert)) {
+                .getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
             List<Object> input = dataSet.getValues();
             int parameterIndex = 1;
             for (int i = 0; i < dataSet.getValues().size(); i++) {
@@ -167,8 +167,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
         String sqlCreateTable = createSqlCreateQuery(input, tableName);
 
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable)) {
+                .getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable);
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException("помилка створення таблиці '%s'%n".formatted(tableName), e);
@@ -208,8 +208,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 " WHERE " + columnName + " = '" + columnValue + "'";
 
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)) {
+                .getConnection(DATABASE_URL + database, userName, password)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
             int parameterIndex = 1;
             for (int i = 0; i < listNames.size(); i++) {
                 preparedStatement.setObject(parameterIndex++, values.get(i));
