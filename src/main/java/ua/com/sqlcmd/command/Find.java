@@ -11,7 +11,7 @@ public class Find implements Command {
     private static final String MINUS = "-";
     private static final String DELIMITER = "|";
     private static final String WHITESPACE = " ";
-    private static final String NEW_LINE = "\n";
+    private static final String NEW_LINE = System.lineSeparator();
     private final View view;
     private final DatabaseManager manager;
     private final Map<String, Integer> maxLength = new HashMap<>();
@@ -30,7 +30,8 @@ public class Find implements Command {
     public void process(String command) {
         String[] input = command.split("[|]");
         if (input.length != 2) {
-            throw new IllegalArgumentException(String.format("Невірний формат, потрібно: find|tableName, а було: %s", command));
+            throw new IllegalArgumentException(String.format("Невірний формат, потрібно: find|tableName, а було: %s",
+                    command));
         } else {
             String tableName = input[1];
             Set<String> strings = manager.getTables();
@@ -94,8 +95,7 @@ public class Find implements Command {
             int width = maxLength.get(columnName);
             sb.append(PLUS).append(MINUS.repeat(width));
         }
-        sb.append(PLUS)
-                .append(NEW_LINE);
+        sb.append(PLUS).append(NEW_LINE);
     }
 
     private void addColumnNames(List<DataSet> dataSets, StringBuilder sb) {
@@ -120,12 +120,10 @@ public class Find implements Command {
     }
 
     private void findMaxLengthInRows(List<DataSet> dataSet) {
-        //TODO change to stream API
-        Set<String> columnNames = null;
-        int maxLength;
         if (dataSet.size() != 0) {
-            columnNames = dataSet.get(0).getColumnNames();
+            Set<String> columnNames = dataSet.get(0).getColumnNames();
 
+            int maxLength;
             for (int i = 0; i < columnNames.size(); i++) {
                 List<String> listNames = new ArrayList<>(columnNames);
                 maxLength = listNames.get(i).length();

@@ -5,26 +5,19 @@ import java.util.*;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
+    private static final String NEW_LINE = System.lineSeparator();
+    private static final String QUESTION_MARK = "?";
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
-    private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name\n" +
-            " FROM information_schema.tables\n" +
-            " WHERE table_schema='public'\n" +
-            " AND table_type='BASE TABLE';";
+    private static final String SQL_SELECT_TABLE_NAMES =
+            "SELECT table_name" + NEW_LINE
+            + " FROM information_schema.tables" + NEW_LINE
+            + " WHERE table_schema='public'" + NEW_LINE
+            + " AND table_type='BASE TABLE';";
+
     private String database;
     private String userName;
     private String password;
     private boolean isConnected;
-
-    private static String prepareColumnNames(DataSet dataSet) {
-        return String.join(", ", dataSet.getColumnNames());
-    }
-
-    private static String prepareValues(DataSet dataSet) {
-        String questionMark = "?";
-        String[] questionMarkSeq = new String[dataSet.getValues().size()];
-        Arrays.fill(questionMarkSeq, questionMark);
-        return String.join(", ", questionMarkSeq);
-    }
 
     @Override
     public void connect(String database, String userName, String password) {
@@ -36,7 +29,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(
                     String.format("Не можу отримати з'єднання з такими параметрами: " +
-                                    "\nбаза: %s, юзер: %s, пароль: %s",
+                                    NEW_LINE + "база: %s, юзер: %s, пароль: %s",
                             database, userName, password), e);
         }
     }
@@ -146,6 +139,16 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(String.format("Помилка додавання запису до таблиці '%s'", tableName), e);
         }
+    }
+
+    private static String prepareColumnNames(DataSet dataSet) {
+        return String.join(", ", dataSet.getColumnNames());
+    }
+
+    private static String prepareValues(DataSet dataSet) {
+        String[] questionMarkSeq = new String[dataSet.getValues().size()];
+        Arrays.fill(questionMarkSeq, QUESTION_MARK);
+        return String.join(", ", questionMarkSeq);
     }
 
     @Override

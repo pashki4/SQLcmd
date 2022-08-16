@@ -17,9 +17,10 @@ public class Update implements Command {
     }
 
     private static void countParametersValidation(String[] split) {
-        if (split.length < 6 || split.length % 2 != 0)
+        if ((split.length < 6) || (split.length % 2 != 0)) {
             throw new IllegalArgumentException(
                     String.format("Ви ввели '%d' параметрів, а потрібно '6' або більше парних значень", split.length));
+        }
     }
 
     private static void tableNameValidation(String[] split, Set<String> tableNames) {

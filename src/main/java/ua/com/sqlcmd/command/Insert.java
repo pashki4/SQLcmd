@@ -24,15 +24,18 @@ public class Insert implements Command {
     @Override
     public void process(String command) {
         String[] split = command.split("[|]");
-        if (split.length <= 3 || split.length % 2 != 0) throw new IllegalArgumentException(
-                String.format("Потрібно вводити парну кількість парамтерів, та кількість повинна бути >= 4",
-                        split.length));
+        if ((split.length <= 3) || (split.length % 2 != 0)) {
+            throw new IllegalArgumentException(
+                    String.format("Потрібно вводити парну кількість парамтерів, та кількість повинна бути >= 4",
+                            split.length));
+        }
 
         String tableName = split[1];
         Set<String> tables = manager.getTables();
 
-        if (!tables.contains(tableName))
+        if (!tables.contains(tableName)) {
             throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
+        }
 
         DataSet dataSet = new DataSetImpl();
         for (int i = 1; i < split.length / 2; i++) {

@@ -9,11 +9,9 @@ import java.util.List;
 public class MainController {
     private final List<Command> commands;
     private final View view;
-    private final DatabaseManager manager;
 
     public MainController(View view, DatabaseManager manager) {
         this.view = view;
-        this.manager = manager;
         commands = List.of(
                 new Connect(view, manager),
                 new Help(view),
