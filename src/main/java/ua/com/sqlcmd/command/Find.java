@@ -30,13 +30,13 @@ public class Find implements Command {
     public void process(String command) {
         String[] input = command.split("[|]");
         if (input.length != 2) {
-            throw new IllegalArgumentException(String.format("Невірний формат, потрібно: find|tableName, а було: %s",
+            throw new IllegalArgumentException(String.format("невірний формат, потрібно: find|tableName, а ввели '%s'",
                     command));
         } else {
             String tableName = input[1];
             Set<String> strings = manager.getTables();
             if (!strings.contains(tableName)) {
-                throw new IllegalArgumentException("Введена невірна назва таблиці: " + tableName);
+                throw new IllegalArgumentException(String.format("невірна назва таблиці '%s'", tableName));
             }
             List<DataSet> tableData = manager.getTableData(tableName);
             printTableData(tableData);

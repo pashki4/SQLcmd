@@ -1,7 +1,9 @@
 package ua.com.sqlcmd.controller;
 
-import ua.com.sqlcmd.command.*;
+import ua.com.sqlcmd.command.Command;
+import ua.com.sqlcmd.command.ExitException;
 import ua.com.sqlcmd.database.DatabaseManager;
+import ua.com.sqlcmd.util.AvailableCommands;
 import ua.com.sqlcmd.view.View;
 
 import java.util.List;
@@ -10,21 +12,10 @@ public class MainController {
     private final List<Command> commands;
     private final View view;
 
+
     public MainController(View view, DatabaseManager manager) {
         this.view = view;
-        commands = List.of(
-                new Connect(view, manager),
-                new Help(view),
-                new Exit(view),
-                new CheckConnection(view, manager),
-                new Create(view, manager),
-                new Update(view, manager),
-                new Insert(view, manager),
-                new TableList(view, manager),
-                new Find(view, manager),
-                new Clear(view, manager),
-                new Unsupported(view)
-        );
+        commands = AvailableCommands.get(view, manager);
     }
 
     public void run() {

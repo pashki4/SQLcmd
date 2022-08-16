@@ -22,9 +22,9 @@ public class Connect implements Command {
         String[] inputCommands = command.split("[|]");
         if (inputCommands.length != 4) {
             throw new IllegalArgumentException("невірна кількість параметрів розділених символом '|',"
-                    + " очікується 4, але ввели: " + inputCommands.length);
+                    + " очікується 4, але ввели: %d".formatted(inputCommands.length));
         }
         manager.connect(inputCommands[1], inputCommands[2], inputCommands[3]);
-        view.write(String.format("Підключено до бази '%s'", inputCommands[1]));
+        view.write("Підключено до бази '%s'".formatted(inputCommands[1]));
     }
 }

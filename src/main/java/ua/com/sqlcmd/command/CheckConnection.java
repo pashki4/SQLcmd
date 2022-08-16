@@ -20,6 +20,6 @@ public class CheckConnection implements Command {
     @Override
     public void process(String command) {
         view.write(String.format("Ви не можете користуватися командою '%s', " +
-                "доки не підключитесь до бази: connect|database|userName|password", command));
+                "спочатку підключіться до бази: connect|database|userName|password", command));
     }
 }

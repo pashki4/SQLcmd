@@ -118,7 +118,7 @@ public class FindTest {
             command.process("clear|asd|someValue");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Невірний формат, потрібно: find|tableName, а було: clear|asd|someValue",
+            assertEquals("невірний формат, потрібно: find|tableName, а ввели 'clear|asd|someValue'",
                     e.getMessage());
         }
     }
@@ -130,7 +130,7 @@ public class FindTest {
             command.process("clear|employ");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Введена невірна назва таблиці: employ", e.getMessage());
+            assertEquals("невірна назва таблиці 'employ'", e.getMessage());
         }
     }
 }

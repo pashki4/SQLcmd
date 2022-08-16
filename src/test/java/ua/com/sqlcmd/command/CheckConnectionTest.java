@@ -7,7 +7,8 @@ import org.mockito.Mockito;
 import ua.com.sqlcmd.database.DatabaseManager;
 import ua.com.sqlcmd.view.View;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.verify;
 
 class CheckConnectionTest {
@@ -27,8 +28,8 @@ class CheckConnectionTest {
     void processCheckConnectionWhenConnectionIsFalse() {
         Mockito.when(manager.isConnected()).thenReturn(false);
         command.process("list");
-        shouldPrint("[Ви не можете користуватися командою 'list'," +
-                " доки не підключитесь до бази: connect|database|userName|password]");
+        shouldPrint("[Ви не можете користуватися командою 'list',"
+                          + " спочатку підключіться до бази: connect|database|userName|password]");
     }
 
     private void shouldPrint(String expected) {

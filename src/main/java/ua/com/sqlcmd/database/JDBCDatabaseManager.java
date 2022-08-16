@@ -8,12 +8,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private static final String NEW_LINE = System.lineSeparator();
     private static final String QUESTION_MARK = "?";
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
-    private static final String SQL_SELECT_TABLE_NAMES =
-            "SELECT table_name" + NEW_LINE
-            + " FROM information_schema.tables" + NEW_LINE
-            + " WHERE table_schema='public'" + NEW_LINE
-            + " AND table_type='BASE TABLE';";
-
+    private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name" + NEW_LINE
+                                                       + " FROM information_schema.tables" + NEW_LINE
+                                                       + " WHERE table_schema='public'" + NEW_LINE
+                                                       + " AND table_type='BASE TABLE';";
     private String database;
     private String userName;
     private String password;
@@ -27,10 +25,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
             this.password = password;
             isConnected = true;
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    String.format("Не можу отримати з'єднання з такими параметрами: " +
-                                    NEW_LINE + "база: %s, юзер: %s, пароль: %s",
-                            database, userName, password), e);
+            throw new RuntimeException("Не можу отримати з'єднання з такими параметрами: %n"
+                            + "база: %s, юзер: %s, пароль: %s%n".formatted(database, userName, password), e);
         }
     }
 
@@ -46,7 +42,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             return result;
         } catch (SQLException e) {
-            throw new RuntimeException("Помилка отримання списку таблиць ", e);
+            throw new RuntimeException("помилка отримання списку таблиць%n".formatted(), e);
         }
     }
 
@@ -75,14 +71,15 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 while (resultSet.next()) {
                     DataSet newDataSet = new DataSetImpl();
                     for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
-                        newDataSet.put(resultSet.getMetaData().getColumnName(i + 1), resultSet.getObject(i + 1));
+                        newDataSet.put(resultSet.getMetaData().getColumnName(i + 1),
+                                resultSet.getObject(i + 1));
                     }
                     result.add(newDataSet);
                 }
                 return result;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка отримання вмісту таблиці '%s'", tableName), e);
+            throw new RuntimeException("помилка отримання вмісту таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
@@ -118,7 +115,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка очищення таблиці '%s'", tableName), e);
+            throw new RuntimeException("помилка очищення таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
@@ -137,7 +134,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка додавання запису до таблиці '%s'", tableName), e);
+            throw new RuntimeException("помилка додавання запису до таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
@@ -162,7 +159,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable)) {
             preparedStatement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка створення таблиці '%s'", tableName), e);
+            throw new RuntimeException("помилка створення таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
@@ -207,7 +204,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(String.format("Помилка оновлення значення в таблиці '%s' ", tableName), e);
+            throw new RuntimeException("помилка оновлення значення в таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
