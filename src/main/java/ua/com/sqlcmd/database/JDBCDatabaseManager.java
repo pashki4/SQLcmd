@@ -8,10 +8,13 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private static final String NEW_LINE = System.lineSeparator();
     private static final String QUESTION_MARK = "?";
     private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
-    private static final String SQL_SELECT_TABLE_NAMES = "SELECT table_name" + NEW_LINE
+    private static final String SQL_SELECT_TABLE_NAMES_SQL = "SELECT table_name" + NEW_LINE
             + " FROM information_schema.tables" + NEW_LINE
             + " WHERE table_schema='public'" + NEW_LINE
             + " AND table_type='BASE TABLE';";
+    private static final String SELECT_ALL_SQL = "SELECT * FROM public.";
+    private static final String SELECT_ALL_COUNT_SQL = "SELECT COUNT(*) FROM public.";
+    private static final String DELETE_SQL = "DELETE FROM public.";
     private String database;
     private String userName;
     private String password;
@@ -34,7 +37,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public Set<String> getTables() {
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES);
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_TABLE_NAMES_SQL);
             ResultSet resultSet = preparedStatement.executeQuery();
             Set<String> result = new LinkedHashSet<>();
             while (resultSet.next()) {
@@ -48,10 +51,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public List<DataSet> getTableData(String tableName) {
-        String selectAllSQL = "SELECT * FROM public." + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectAllSQL);
+            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(SELECT_ALL_SQL + tableName);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
 
             int rowCount = getRowCount(tableName);
@@ -106,10 +108,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     private int getRowCount(String tableName) {
-        String selectRowCountSQL = "SELECT COUNT(*) FROM public." + tableName + ";";
         try (Connection connection =
                      DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(selectRowCountSQL);
+            PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(SELECT_ALL_COUNT_SQL + tableName);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
             resultSet.next();
             int columnIndex = 1;
@@ -121,10 +122,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void clear(String tableName) {
-        String sqlDelete = "DELETE FROM " + tableName + ";";
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlDelete);
+            PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL + tableName);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("помилка очищення таблиці '%s'%n".formatted(tableName), e);
@@ -133,21 +133,38 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void insert(DataSet dataSet, String tableName) {
-        String columnNames = prepareColumnNames(dataSet);
-        String values = prepareValues(dataSet);
-        String sqlInsert = "INSERT INTO public." + tableName + " (" + columnNames + ") VALUES (" + values + ")";
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-            List<Object> input = dataSet.getValues();
-            int parameterIndex = 1;
-            for (int i = 0; i < dataSet.getValues().size(); i++) {
-                preparedStatement.setObject(parameterIndex++, input.get(i));
-            }
-            preparedStatement.executeUpdate();
+            PreparedStatement insertStatement = prepareInsertStatement(connection, dataSet, tableName);
+            fillInsertStatementWithData(dataSet, insertStatement);
+            insertStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("помилка додавання запису до таблиці '%s'%n".formatted(tableName), e);
         }
+    }
+
+    private static void fillInsertStatementWithData(DataSet dataSet, PreparedStatement insertStatement) throws SQLException {
+        List<Object> input = dataSet.getValues();
+        int parameterIndex = 1;
+        for (int i = 0; i < dataSet.getValues().size(); i++) {
+            insertStatement.setObject(parameterIndex++, input.get(i));
+        }
+    }
+
+    private PreparedStatement prepareInsertStatement(Connection connection, DataSet dataSet, String tableName) {
+        try {
+            String insertIntoSQL = createInsertIntoSQL(dataSet, tableName);
+            return connection.prepareStatement(insertIntoSQL);
+        } catch (SQLException e) {
+            throw new IllegalArgumentException("помилка при створенні insertStatement", e);
+        }
+    }
+
+    private static String createInsertIntoSQL(DataSet dataSet, String tableName) {
+        String columnNames = prepareColumnNames(dataSet);
+        String values = prepareValues(dataSet);
+        String sqlInsert = "INSERT INTO public." + tableName + " (" + columnNames + ") VALUES (" + values + ")";
+        return sqlInsert;
     }
 
     private static String prepareColumnNames(DataSet dataSet) {
