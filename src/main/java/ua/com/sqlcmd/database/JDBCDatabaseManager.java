@@ -220,29 +220,43 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void updateTableData(String tableName, String columnNameCriteria, String columnValueCriteria, DataSet newValue) {
-        Set<String> columnNames = newValue.getColumnNames();
-        var listNames = new ArrayList<>(columnNames);
-        List<Object> values = newValue.getValues();
-        String formattedColumnNames;
-        if (columnNames.size() == 1) {
-            formattedColumnNames = listNames.get(0) + " = ?";
-        } else {
-            formattedColumnNames = String.join(" = ?, ", columnNames) + " = ?";
-        }
-        String sqlUpdate = "UPDATE " + tableName + " SET " + formattedColumnNames +
-                " WHERE " + columnNameCriteria + " = '" + columnValueCriteria + "'";
+        String formattedColumnNames = formatColumnNames(newValue);
+        String updateSQLQuery = collectSQLUpdateQuery(tableName, columnNameCriteria, columnValueCriteria, formattedColumnNames);
 
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
-            int parameterIndex = 1;
-            for (int i = 0; i < listNames.size(); i++) {
-                preparedStatement.setObject(parameterIndex++, values.get(i));
-            }
-            preparedStatement.executeUpdate();
+            PreparedStatement updateStatement = connection.prepareStatement(updateSQLQuery);
+            fillUpdateStatement(updateStatement, newValue);
+            updateStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("помилка оновлення значення в таблиці '%s'%n".formatted(tableName), e);
         }
+    }
+
+    private void fillUpdateStatement(PreparedStatement updateStatement, DataSet newValue) throws SQLException {
+        int parameterIndex = 1;
+        List<Object> values = newValue.getValues();
+        for (int i = 0; i < values.size(); i++) {
+            updateStatement.setObject(parameterIndex++, values.get(i));
+        }
+    }
+
+    private static String collectSQLUpdateQuery(String tableName, String columnNameCriteria, String columnValueCriteria, String formattedColumnNames) {
+        String sqlUpdate = "UPDATE " + tableName + " SET " + formattedColumnNames +
+                " WHERE " + columnNameCriteria + " = '" + columnValueCriteria + "'";
+        return sqlUpdate;
+    }
+
+    private String formatColumnNames(DataSet newValue) {
+        Set<String> columnNames = newValue.getColumnNames();
+        var listColumnNames = new ArrayList<>(columnNames);
+        String formattedColumnNames;
+        if (columnNames.size() == 1) {
+            formattedColumnNames = listColumnNames.get(0) + " = ?";
+        } else {
+            formattedColumnNames = String.join(" = ?, ", columnNames) + " = ?";
+        }
+        return formattedColumnNames;
     }
 
     @Override
