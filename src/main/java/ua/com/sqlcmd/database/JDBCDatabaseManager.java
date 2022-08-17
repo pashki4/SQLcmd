@@ -153,14 +153,14 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     private PreparedStatement prepareInsertStatement(Connection connection, DataSet dataSet, String tableName) {
         try {
-            String insertIntoSQL = createInsertIntoSQL(dataSet, tableName);
+            String insertIntoSQL = collectSQLInsertQuery(dataSet, tableName);
             return connection.prepareStatement(insertIntoSQL);
         } catch (SQLException e) {
             throw new IllegalArgumentException("помилка при створенні insertStatement", e);
         }
     }
 
-    private static String createInsertIntoSQL(DataSet dataSet, String tableName) {
+    private static String collectSQLInsertQuery(DataSet dataSet, String tableName) {
         String columnNames = prepareColumnNames(dataSet);
         String values = prepareValues(dataSet);
         String sqlInsert = "INSERT INTO public." + tableName + " (" + columnNames + ") VALUES (" + values + ")";
@@ -178,36 +178,44 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void createTable(String queryCreateTable) {
-        String[] input = queryCreateTable.split("[|]");
-        String tableName = input[1];
-        String sqlCreateTable = createSqlCreateQuery(input, tableName);
+    public void createTable(String command) {
+        String[] splitCommand = command.split("[|]");
+        String tableName = splitCommand[1];
+        String createSQL = collectSqlCreateQuery(splitCommand, tableName);
 
         try (Connection connection = DriverManager
                 .getConnection(DATABASE_URL + database, userName, password)) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlCreateTable);
-            preparedStatement.execute();
+            PreparedStatement createStatement = prepareCreateStatement(createSQL, connection);
+            createStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException("помилка створення таблиці '%s'%n".formatted(tableName), e);
         }
     }
 
-    private String createSqlCreateQuery(String[] input, String tableName) {
-        String sqlCreateTable = "CREATE TABLE public." + tableName + " (ID serial, ";
+    private PreparedStatement prepareCreateStatement(String createSQL, Connection connection) {
+        try {
+            return connection.prepareStatement(createSQL);
+        } catch (SQLException e) {
+            throw new RuntimeException("Can't prepare statement to create table", e);
+        }
+    }
+
+    private String collectSqlCreateQuery(String[] input, String tableName) {
+        String result = "CREATE TABLE public." + tableName + " (ID serial, ";
         String[] varcharColumnNames = addVarcharToColumnNames(input);
 
-        sqlCreateTable += String.join(", ", varcharColumnNames);
-        sqlCreateTable += ", PRIMARY KEY(id));";
-        return sqlCreateTable;
+        result += String.join(", ", varcharColumnNames);
+        result += ", PRIMARY KEY(id));";
+        return result;
     }
 
     private String[] addVarcharToColumnNames(String[] input) {
         String[] columnNames = Arrays.copyOfRange(input, 2, input.length);
-        String[] columnNamesVarchar = new String[columnNames.length];
+        String[] result = new String[columnNames.length];
         for (int i = 0; i < columnNames.length; i++) {
-            columnNamesVarchar[i] = columnNames[i].toUpperCase() + " varchar(30) NOT NULL";
+            result[i] = columnNames[i].toUpperCase() + " varchar(30) NOT NULL";
         }
-        return columnNamesVarchar;
+        return result;
     }
 
     @Override
