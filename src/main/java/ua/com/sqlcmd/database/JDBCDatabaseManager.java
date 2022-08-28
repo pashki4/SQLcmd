@@ -1,5 +1,7 @@
 package ua.com.sqlcmd.database;
 
+import ua.com.sqlcmd.util.PropertiesUtil;
+
 import java.sql.*;
 import java.util.*;
 
@@ -7,11 +9,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     private static final String NEW_LINE = System.lineSeparator();
     private static final String QUESTION_MARK = "?";
-    private static final String DATABASE_URL = "jdbc:postgresql://127.0.0.1:5432/";
+    private static final String DB_URL_KEY = "db.url";
     private static final String SELECT_TABLE_NAMES_SQL = "SELECT table_name" + NEW_LINE
-            + " FROM information_schema.tables" + NEW_LINE
-            + " WHERE table_schema='public'" + NEW_LINE
-            + " AND table_type='BASE TABLE';";
+                                                       + " FROM information_schema.tables" + NEW_LINE
+                                                       + " WHERE table_schema='public'" + NEW_LINE
+                                                       + " AND table_type='BASE TABLE';";
     private static final String SELECT_ALL_SQL = "SELECT * FROM public.";
     private static final String SELECT_ALL_COUNT_SQL = "SELECT COUNT(*) FROM public.";
     private static final String DELETE_SQL = "DELETE FROM public.";
@@ -22,7 +24,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void connect(String database, String userName, String password) {
-        try (Connection connection = DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
+        try (Connection connection = DriverManager.getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             this.database = database;
             this.userName = userName;
             this.password = password;
@@ -36,7 +38,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public Set<String> getTables() {
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password)) {
+                .getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement selectTableNamesStatement = connection.prepareStatement(SELECT_TABLE_NAMES_SQL);
             ResultSet resultSet = selectTableNamesStatement.executeQuery();
             Set<String> result = new LinkedHashSet<>();
@@ -52,7 +54,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public List<DataSet> getTableData(String tableName) {
         try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
+                     DriverManager.getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(SELECT_ALL_SQL + tableName);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
 
@@ -70,7 +72,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     private int getRowCount(String tableName) {
         try (Connection connection =
-                     DriverManager.getConnection(DATABASE_URL + database, userName, password)) {
+                     DriverManager.getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement preparedStatementSelectRowCount = connection.prepareStatement(SELECT_ALL_COUNT_SQL + tableName);
             ResultSet resultSet = preparedStatementSelectRowCount.executeQuery();
             resultSet.next();
@@ -123,7 +125,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public void clear(String tableName) {
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password)) {
+                .getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL + tableName);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -134,7 +136,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     @Override
     public void insert(DataSet dataSet, String tableName) {
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password)) {
+                .getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement insertStatement = prepareInsertStatement(connection, dataSet, tableName);
             fillInsertStatementWithData(dataSet, insertStatement);
             insertStatement.executeUpdate();
@@ -184,7 +186,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         String createSQL = collectSqlCreateQuery(splitCommand, tableName);
 
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password)) {
+                .getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement createStatement = prepareCreateStatement(createSQL, connection);
             createStatement.execute();
         } catch (SQLException e) {
@@ -224,7 +226,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         String updateSQLQuery = collectSQLUpdateQuery(tableName, columnNameCriteria, columnValueCriteria, formattedColumnNames);
 
         try (Connection connection = DriverManager
-                .getConnection(DATABASE_URL + database, userName, password)) {
+                .getConnection(PropertiesUtil.get(DB_URL_KEY) + database, userName, password)) {
             PreparedStatement updateStatement = connection.prepareStatement(updateSQLQuery);
             fillUpdateStatement(updateStatement, newValue);
             updateStatement.executeUpdate();

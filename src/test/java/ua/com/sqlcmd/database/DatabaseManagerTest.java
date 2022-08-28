@@ -2,6 +2,7 @@ package ua.com.sqlcmd.database;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ua.com.sqlcmd.util.PropertiesUtil;
 
 import java.util.List;
 import java.util.Set;
@@ -11,13 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 abstract class DatabaseManagerTest {
 
     private DatabaseManager manager;
+    private static final String DB_NAME_KEY = "db.name";
+    private static final String USERNAME_KEY = "db.username";
+    private static final String PASSWORD_KEY = "db.password";
 
     public abstract DatabaseManager getDatabaseManager();
 
     @BeforeEach
     void setUp() {
         manager = getDatabaseManager();
-        manager.connect("mytestdb", "postgres", "1234");
+        manager.connect(PropertiesUtil.get(DB_NAME_KEY),
+                        PropertiesUtil.get(USERNAME_KEY),
+                        PropertiesUtil.get(PASSWORD_KEY)
+        );
     }
 
     @Test
